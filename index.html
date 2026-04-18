@@ -157,11 +157,6 @@
                         </div>
                     </div>
 
-                    <div class="credits-legal">
-                        <h3 class="credits-legal__title">Sobre Minecraft</h3>
-                        <p class="credits-legal__text"><strong>Minecraft</strong> y <strong>Minecraft Pocket Edition</strong> son marcas y software propiedad de Mojang AB y Microsoft. Estas APKs se ofrecen solo como referencia y archivo; siempre que puedas, apoya a los desarrolladores comprando el juego en las tiendas oficiales.</p>
-                    </div>
-
                     <div class="credits-copy">
                         <p class="credits-copy__symbol">© 2026 Nobody · <strong>LegacyCraft</strong></p>
                         <p class="credits-copy__rights">Todos los derechos reservados. Los textos, el diseño de esta página, el logotipo LegacyCraft y el código del sitio son obra del autor salvo donde se indique lo contrario.</p>
@@ -184,33 +179,41 @@
     <div id="download-gate" class="download-gate" hidden aria-modal="true" role="dialog" aria-labelledby="download-gate-title">
         <div class="download-gate__backdrop" aria-hidden="true"></div>
         <div class="download-gate__box glass-panel">
-            <div class="download-gate__glow" aria-hidden="true"></div>
-            <div class="download-gate__icon" aria-hidden="true">
-                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                    <polyline points="7 10 12 15 17 10"/>
-                    <line x1="12" y1="15" x2="12" y2="3"/>
-                </svg>
+            <div id="download-gate-panel-main" class="download-gate__panel">
+                <div class="download-gate__glow" aria-hidden="true"></div>
+                <div class="download-gate__icon" aria-hidden="true">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="7 10 12 15 17 10"/>
+                        <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                </div>
+                <p class="download-gate__eyebrow">Antes de descargar</p>
+                <h2 id="download-gate-title" class="download-gate__title download-gate__title--arcade">LegacyCraft</h2>
+                <p class="download-gate__text">Si algo falla con la APK, cuéntanoslo en <strong>Discord</strong> y lo revisamos.</p>
+                <a href="https://discord.gg/jmkrHdpj" class="btn-discord-modal" target="_blank" rel="noopener noreferrer">
+                    <svg class="btn-discord-modal__icon" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                        <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.95 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
+                    </svg>
+                    Ir a Discord
+                </a>
+                <div class="download-gate__divider" aria-hidden="true"></div>
+                <div class="download-gate__timer" aria-live="polite">
+                    <p class="download-gate__timer-caption">Redirección a la descarga</p>
+                    <div class="download-gate__timer-display">
+                        <span id="download-count" class="download-gate__timer-num">10</span>
+                        <span class="download-gate__timer-suffix">s</span>
+                    </div>
+                    <div class="download-gate__progress-track">
+                        <div id="download-progress-bar" class="download-gate__progress-bar"></div>
+                    </div>
+                </div>
             </div>
-            <p class="download-gate__eyebrow">Antes de descargar</p>
-            <h2 id="download-gate-title" class="download-gate__title download-gate__title--arcade">LegacyCraft</h2>
-            <p class="download-gate__text">Si algo falla con la APK, cuéntanoslo en <strong>Discord</strong> y lo revisamos.</p>
-            <a href="https://discord.gg/jmkrHdpj" class="btn-discord-modal" target="_blank" rel="noopener noreferrer">
-                <svg class="btn-discord-modal__icon" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                    <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.95 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
-                </svg>
-                Ir a Discord
-            </a>
-            <div class="download-gate__divider" aria-hidden="true"></div>
-            <div class="download-gate__timer" aria-live="polite">
-                <p class="download-gate__timer-caption">Redirección a la descarga</p>
-                <div class="download-gate__timer-display">
-                    <span id="download-count" class="download-gate__timer-num">10</span>
-                    <span class="download-gate__timer-suffix">s</span>
-                </div>
-                <div class="download-gate__progress-track">
-                    <div id="download-progress-bar" class="download-gate__progress-bar"></div>
-                </div>
+            <div id="download-gate-panel-adblock" class="download-gate__panel download-gate__panel--adblock" hidden>
+                <p class="download-gate__eyebrow">Descarga bloqueada</p>
+                <h2 id="download-gate-adblock-title" class="download-gate__title download-gate__title--arcade">LegacyCraft</h2>
+                <p class="download-gate__text">Desactiva el bloqueador <strong>en esta página</strong> y pulsa Reintentar para continuar con la descarga.</p>
+                <button type="button" class="btn-teal download-gate__retry-adblock" id="download-gate-retry-adblock">Ya lo desactivé · Reintentar</button>
             </div>
         </div>
     </div>

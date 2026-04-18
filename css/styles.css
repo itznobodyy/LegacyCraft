@@ -6,9 +6,9 @@
     --teal: #14b8a6;
     --teal-hover: #0d9488;
     --teal-glow: rgba(20, 184, 166, 0.35);
-    --glass-bg: rgba(10, 16, 16, 0.58);
+    --glass-bg: rgba(10, 16, 16, 0.78);
     --glass-border: rgba(167, 243, 208, 0.14);
-    --glass-bar: rgba(8, 12, 12, 0.72);
+    --glass-bar: rgba(8, 12, 12, 0.82);
     --text: #ecfdf5;
     --text-muted: #99b5ad;
     --radius: 14px;
@@ -22,7 +22,7 @@
 }
 
 html {
-    scroll-behavior: smooth;
+    scroll-behavior: auto;
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
 }
@@ -55,6 +55,9 @@ body {
     z-index: 0;
     overflow: hidden;
     pointer-events: none;
+    contain: strict;
+    isolation: isolate;
+    transform: translateZ(0);
 }
 
 .bg-blur__image {
@@ -64,8 +67,8 @@ body {
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    filter: blur(8px);
-    transform: scale(1.04);
+    filter: blur(6px);
+    transform: translate3d(0, 0, 0) scale(1.04);
     transform-origin: center;
 }
 
@@ -84,6 +87,7 @@ body {
     flex-direction: column;
     padding-top: max(4.5rem, calc(4.25rem + env(safe-area-inset-top)));
     padding-bottom: max(5.5rem, calc(4.5rem + env(safe-area-inset-bottom)));
+    isolation: isolate;
 }
 
 /* ——— Top bar (fija: el logo siempre visible) ——— */
@@ -110,10 +114,11 @@ body {
 
 .glass-bar {
     background: var(--glass-bar);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(10px) saturate(1.06);
+    -webkit-backdrop-filter: blur(10px) saturate(1.06);
     border: 1px solid var(--glass-border);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+    transform: translateZ(0);
 }
 
 .logo-link {
@@ -201,8 +206,8 @@ body {
 
 .glass-panel {
     background: var(--glass-bg);
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
+    backdrop-filter: blur(8px) saturate(1.08);
+    -webkit-backdrop-filter: blur(8px) saturate(1.08);
     border: 1px solid var(--glass-border);
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
 }
@@ -569,33 +574,6 @@ body {
     opacity: 0.92;
 }
 
-.credits-legal {
-    margin-top: 0.25rem;
-    padding: 1.1rem 1.15rem;
-    border-radius: var(--radius-sm);
-    border: 1px solid rgba(251, 191, 36, 0.18);
-    background: rgba(251, 191, 36, 0.06);
-}
-
-.credits-legal__title {
-    font-size: 0.95rem;
-    font-weight: 700;
-    color: #fde68a;
-    margin-bottom: 0.5rem;
-}
-
-.credits-legal__text {
-    margin: 0;
-    font-size: 0.88rem;
-    line-height: 1.65;
-    color: var(--text-muted);
-}
-
-.credits-legal__text strong {
-    color: #fef3c7;
-    font-weight: 600;
-}
-
 .credits-footer {
     margin-top: 1.25rem;
     text-align: center;
@@ -693,9 +671,9 @@ body.download-gate-open {
     inset: 0;
     cursor: pointer;
     background: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(20, 184, 166, 0.12), transparent 55%),
-        rgba(2, 8, 10, 0.78);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+        rgba(2, 8, 10, 0.82);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
     animation: download-gate-backdrop-in 0.45s ease-out both;
 }
 
@@ -721,13 +699,13 @@ body.download-gate-open {
     padding: 2rem 1.85rem 1.75rem;
     text-align: center;
     border-radius: 20px;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
     background: linear-gradient(165deg, rgba(18, 32, 32, 0.92) 0%, rgba(8, 16, 18, 0.94) 100%);
     border: 1px solid rgba(167, 243, 208, 0.18);
     box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2) inset,
         0 24px 48px rgba(0, 0, 0, 0.45),
         0 0 80px rgba(20, 184, 166, 0.08);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
     animation: download-gate-box-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
@@ -777,6 +755,24 @@ body.download-gate-open {
     background: rgba(20, 184, 166, 0.12);
     border: 1px solid rgba(94, 234, 212, 0.2);
     box-shadow: 0 4px 20px rgba(20, 184, 166, 0.1);
+}
+
+.download-gate__panel--adblock {
+    text-align: center;
+    padding: 0.35rem 0 0.15rem;
+}
+
+.download-gate__panel--adblock .download-gate__text {
+    margin-bottom: 1.5rem;
+}
+
+.download-gate__retry-adblock {
+    appearance: none;
+    cursor: pointer;
+    width: 100%;
+    max-width: 20rem;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .download-gate__eyebrow {
