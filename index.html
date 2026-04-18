@@ -1,0 +1,215 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>LegacyCraft</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="bg-blur" aria-hidden="true">
+        <div class="bg-blur__image"></div>
+        <div class="bg-blur__shade"></div>
+    </div>
+
+    <div class="page">
+        <header class="topbar glass-bar">
+            <a href="#inicio" class="logo-link" data-section="inicio">
+                <img src="img/logo.png" alt="LegacyCraft" class="logo-img">
+            </a>
+        </header>
+
+        <div class="layout">
+            <aside class="sidebar glass-panel" aria-label="Menú principal">
+                <nav class="side-nav">
+                    <a href="#inicio" class="nav-link is-active" data-section="inicio">Inicio</a>
+                    <a href="#apks" class="nav-link" data-section="apks">APKs PE</a>
+                    <a href="#creditos" class="nav-link" data-section="creditos">Créditos</a>
+                </nav>
+            </aside>
+
+            <main class="main-col">
+                <section id="inicio" class="panel glass-panel view is-active" data-view="inicio" tabindex="-1">
+                    <h1 class="panel-heading">Bienvenido a LegacyCraft</h1>
+                    <p class="panel-lead">Este sitio reúne <strong>APKs de Minecraft Pocket Edition</strong> en versiones clásicas (0.15.10 y 0.14.3), pensadas para quienes quieren revivir la experiencia de antes o probar builds retro en Android.</p>
+
+                    <div class="home-blocks">
+                        <div class="home-block">
+                            <h2 class="home-block__title">Qué encontrarás</h2>
+                            <ul class="home-list">
+                                <li>Enlaces directos a archivos hospedados en MediaFire.</li>
+                                <li>Resumen de cada versión: fecha aproximada y características destacadas.</li>
+                                <li>Buscador para filtrar rápido entre las entradas de la lista.</li>
+                                <li>Una breve espera antes de abrir el enlace, con aviso para reportar problemas en Discord.</li>
+                            </ul>
+                        </div>
+
+                        <div class="home-block">
+                            <h2 class="home-block__title">Cómo descargar</h2>
+                            <ol class="home-steps">
+                                <li>Abre <strong>APKs PE</strong> en el menú lateral.</li>
+                                <li>Elige la versión que quieras y pulsa <strong>Descargar</strong>.</li>
+                                <li>Lee el mensaje del modal; si necesitas ayuda, usa el botón de Discord.</li>
+                                <li>Espera a que termine la cuenta atrás: se abrirá la página de MediaFire.</li>
+                                <li>Desde MediaFire, inicia la descarga del archivo <strong>.apk</strong>.</li>
+                            </ol>
+                        </div>
+
+                        <div class="home-block">
+                            <h2 class="home-block__title">Consejos antes de instalar</h2>
+                            <ul class="home-list">
+                                <li>Activa <strong>“Orígenes desconocidos”</strong> o el permiso equivalente para instalar APK fuera de Play Store (según tu móvil).</li>
+                                <li>Haz copia de tus mundos si ya tienes otra versión de Minecraft instalada.</li>
+                                <li>Comprueba que tienes espacio libre (las APK pesan varias decenas de MB).</li>
+                                <li>Si la app no abre o crashea, prueba otra versión o pregunta en Discord (comunidad o al usuario <strong translate="no">itznobodyy</strong>).</li>
+                            </ul>
+                        </div>
+
+                        <div class="home-block home-block--note">
+                            <h2 class="home-block__title">Comunidad</h2>
+                            <p class="home-note">¿Dudas, fallos al instalar o enlaces caídos? Únete al <a href="https://discord.gg/jmkrHdpj" class="home-inline-link" target="_blank" rel="noopener noreferrer">Discord de LegacyCraft</a>: ahí podemos orientarte mejor que por un comentario suelto.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="apks" class="panel glass-panel view" data-view="apks" tabindex="-1">
+                    <div class="apk-panel-toolbar">
+                        <h2 class="panel-heading panel-heading--with-icon panel-heading--toolbar">
+                            <span class="panel-icon" aria-hidden="true">📦</span>
+                            Descargas APK
+                        </h2>
+                        <div class="search-wrap">
+                            <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                <circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/>
+                            </svg>
+                            <label class="visually-hidden" for="apk-search">Buscar en la lista</label>
+                            <input type="search" id="apk-search" class="search-input" placeholder="Buscar versión…" autocomplete="off">
+                        </div>
+                    </div>
+                    <ul class="apk-list" id="apk-list">
+                        <li class="apk-item" data-search="minecraft pe 0.15.10 agosto pistones mapas corceles">
+                            <div class="apk-item__head">
+                                <div class="apk-item__titles">
+                                    <span class="apk-item__name">Minecraft PE 0.15.10</span>
+                                    <span class="apk-tag">Agosto 2016</span>
+                                </div>
+                                <a href="https://www.mediafire.com/file/y022ytey1czr730/Legacy+0.15.10+-+Android+14.apk/file" class="btn-teal btn-download-gate">Descargar</a>
+                            </div>
+                            <p class="apk-item__desc">Pistones pegajosos, mapas del tesoro, corceles y mobs clásicos.</p>
+                            <ul class="apk-item__feats">
+                                <li>Pistones pegajosos</li>
+                                <li>Mapas del tesoro</li>
+                                <li>Corceles y armadura</li>
+                            </ul>
+                        </li>
+                        <li class="apk-item" data-search="minecraft pe 0.14 0.14.3 redstone dispensadores carritos brujas">
+                            <div class="apk-item__head">
+                                <div class="apk-item__titles">
+                                    <span class="apk-item__name">Minecraft PE 0.14.3</span>
+                                    <span class="apk-tag apk-tag--muted">Febrero 2016</span>
+                                </div>
+                                <a href="https://www.mediafire.com/file/6am4w8xrygsnhyh/LegacyCraft+0.14.3.apk/file" class="btn-teal btn-download-gate">Descargar</a>
+                            </div>
+                            <p class="apk-item__desc">Redstone básico, dispensadores, carritos con cofres y biomas clásicos.</p>
+                            <ul class="apk-item__feats">
+                                <li>Redstone y dispensadores</li>
+                                <li>Carritos con cofres</li>
+                                <li>Brujas y cabañas</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </section>
+
+                <section id="creditos" class="panel glass-panel panel--credits view" data-view="creditos" tabindex="-1">
+                    <h2 class="panel-heading panel-heading--credits">Créditos</h2>
+                    <p class="credits-intro">LegacyCraft es un proyecto personal para compartir APKs clásicas de Minecraft PE con una interfaz sencilla. Gracias por pasarte por aquí.</p>
+
+                    <div class="credits-grid">
+                        <div class="credits-card">
+                            <h3 class="credits-card__title">Autoría</h3>
+                            <p class="credits-line"><strong>Creador:</strong> Nobody</p>
+                            <p class="credits-line">
+                                <strong>GitHub:</strong>
+                                <a href="https://github.com/itznobodyy" class="credits-link" target="_blank" rel="noopener noreferrer">github.com/itznobodyy</a>
+                            </p>
+                            <p class="credits-line credits-line--small">Ahí puedes ver otros proyectos o dejar una estrella si te gusta el trabajo.</p>
+                        </div>
+
+                        <div class="credits-card">
+                            <h3 class="credits-card__title">Discord (autor)</h3>
+                            <p class="credits-line credits-line--flush">Usuario:</p>
+                            <p class="credits-handle" translate="no">itznobodyy</p>
+                            <p class="credits-line credits-line--small">Búscame en la app de Discord con ese nombre para mensajes directos, dudas sobre la web o las APK.</p>
+                        </div>
+
+                        <div class="credits-card">
+                            <h3 class="credits-card__title">Sitio</h3>
+                            <p class="credits-line credits-line--small">Página estática: HTML, CSS y JavaScript. Tipografías: Outfit y Press Start 2P (Google Fonts). Fondo e imagen de marca propios del proyecto.</p>
+                            <p class="credits-line credits-line--small"><strong>Actualización de contenido:</strong> abril de 2026.</p>
+                        </div>
+                    </div>
+
+                    <div class="credits-legal">
+                        <h3 class="credits-legal__title">Sobre Minecraft</h3>
+                        <p class="credits-legal__text"><strong>Minecraft</strong> y <strong>Minecraft Pocket Edition</strong> son marcas y software propiedad de Mojang AB y Microsoft. Estas APKs se ofrecen solo como referencia y archivo; siempre que puedas, apoya a los desarrolladores comprando el juego en las tiendas oficiales.</p>
+                    </div>
+
+                    <div class="credits-copy">
+                        <p class="credits-copy__symbol">© 2026 Nobody · <strong>LegacyCraft</strong></p>
+                        <p class="credits-copy__rights">Todos los derechos reservados. Los textos, el diseño de esta página, el logotipo LegacyCraft y el código del sitio son obra del autor salvo donde se indique lo contrario.</p>
+                        <p class="credits-copy__rights">Queda prohibida la reproducción o distribución no autorizada de los materiales propios del proyecto.</p>
+                    </div>
+
+                    <p class="credits-footer">Hecho con cuidado para la comunidad retro de MC PE · LegacyCraft</p>
+                </section>
+            </main>
+        </div>
+
+        <a href="https://discord.gg/jmkrHdpj" class="discord-fab glass-panel" target="_blank" rel="noopener noreferrer" title="Discord">
+            <svg class="discord-icon" width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.95 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
+            </svg>
+            <span>Discord</span>
+        </a>
+    </div>
+
+    <div id="download-gate" class="download-gate" hidden aria-modal="true" role="dialog" aria-labelledby="download-gate-title">
+        <div class="download-gate__backdrop" aria-hidden="true"></div>
+        <div class="download-gate__box glass-panel">
+            <div class="download-gate__glow" aria-hidden="true"></div>
+            <div class="download-gate__icon" aria-hidden="true">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="7 10 12 15 17 10"/>
+                    <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+            </div>
+            <p class="download-gate__eyebrow">Antes de descargar</p>
+            <h2 id="download-gate-title" class="download-gate__title download-gate__title--arcade">LegacyCraft</h2>
+            <p class="download-gate__text">Si algo falla con la APK, cuéntanoslo en <strong>Discord</strong> y lo revisamos.</p>
+            <a href="https://discord.gg/jmkrHdpj" class="btn-discord-modal" target="_blank" rel="noopener noreferrer">
+                <svg class="btn-discord-modal__icon" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.95 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
+                </svg>
+                Ir a Discord
+            </a>
+            <div class="download-gate__divider" aria-hidden="true"></div>
+            <div class="download-gate__timer" aria-live="polite">
+                <p class="download-gate__timer-caption">Redirección a la descarga</p>
+                <div class="download-gate__timer-display">
+                    <span id="download-count" class="download-gate__timer-num">10</span>
+                    <span class="download-gate__timer-suffix">s</span>
+                </div>
+                <div class="download-gate__progress-track">
+                    <div id="download-progress-bar" class="download-gate__progress-bar"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/script.js"></script>
+</body>
+</html>
