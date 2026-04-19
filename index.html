@@ -58,7 +58,7 @@
                                 <li>Abre <strong>APKs PE</strong> en el menú lateral.</li>
                                 <li>Elige la versión que quieras y pulsa <strong>Descargar</strong>.</li>
                                 <li>Lee el mensaje del modal; si necesitas ayuda, usa el botón de Discord.</li>
-                                <li>Espera a que termine la cuenta atrás: se abrirá la página de MediaFire.</li>
+                                <li>Espera a que termine la cuenta atrás: aparecerá el botón de MediaFire.</li>
                                 <li>Desde MediaFire, inicia la descarga del archivo <strong>.apk</strong>.</li>
                             </ol>
                         </div>
@@ -101,7 +101,7 @@
                                     <span class="apk-item__name">Minecraft PE 0.15.10</span>
                                     <span class="apk-tag">Agosto 2016</span>
                                 </div>
-                                <a href="https://www.mediafire.com/file/y022ytey1czr730/Legacy+0.15.10+-+Android+14.apk/file" class="btn-teal btn-download-gate">Descargar</a>
+                                <a href="https://www.mediafire.com/file/y022ytey1czr730/Legacy+0.15.10+-+Android+14.apk/file" class="btn-teal btn-download-gate" target="_blank" rel="noopener noreferrer">Descargar</a>
                             </div>
                             <p class="apk-item__desc">Pistones pegajosos, mapas del tesoro, corceles y mobs clásicos.</p>
                             <ul class="apk-item__feats">
@@ -116,7 +116,7 @@
                                     <span class="apk-item__name">Minecraft PE 0.14.3</span>
                                     <span class="apk-tag apk-tag--muted">Febrero 2016</span>
                                 </div>
-                                <a href="https://www.mediafire.com/file/6am4w8xrygsnhyh/LegacyCraft+0.14.3.apk/file" class="btn-teal btn-download-gate">Descargar</a>
+                                <a href="https://www.mediafire.com/file/6am4w8xrygsnhyh/LegacyCraft+0.14.3.apk/file" class="btn-teal btn-download-gate" target="_blank" rel="noopener noreferrer">Descargar</a>
                             </div>
                             <p class="apk-item__desc">Redstone básico, dispensadores, carritos con cofres y biomas clásicos.</p>
                             <ul class="apk-item__feats">
@@ -207,6 +207,12 @@
                     <div class="download-gate__progress-track">
                         <div id="download-progress-bar" class="download-gate__progress-bar"></div>
                     </div>
+                </div>
+                <div id="download-gate__mediafire" class="download-gate__mediafire" hidden>
+                    <p class="download-gate__timer-caption">Listo para descargar</p>
+                    <a id="mediafire-download-btn" class="mediafire-download-btn" href="#" target="_blank" rel="noopener noreferrer">
+                        <img src="https://upload.wikimedia.org/wikipedia/fr/2/2e/MediaFire_Logo.svg" alt="MediaFire" class="mediafire-logo-img">
+                    </a>
                 </div>
             </div>
             <div id="download-gate-panel-adblock" class="download-gate__panel download-gate__panel--adblock" hidden>

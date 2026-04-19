@@ -64,6 +64,8 @@
     var panelAdblock = document.getElementById("download-gate-panel-adblock");
     var countEl = document.getElementById("download-count");
     var progressBar = document.getElementById("download-progress-bar");
+    var mediafireContainer = document.getElementById("download-gate__mediafire");
+    var mediafireBtn = document.getElementById("mediafire-download-btn");
     var gateBackdrop = gateEl ? gateEl.querySelector(".download-gate__backdrop") : null;
     var gateTimer = null;
     var gateActive = false;
@@ -161,6 +163,7 @@
         pendingGateUrl = null;
         if (panelMain) panelMain.hidden = false;
         if (panelAdblock) panelAdblock.hidden = true;
+        if (mediafireContainer) mediafireContainer.hidden = true;
         if (gateEl) gateEl.setAttribute("aria-labelledby", "download-gate-title");
     }
 
@@ -179,6 +182,19 @@
         if (gateEl) gateEl.hidden = true;
         document.body.classList.remove("download-gate-open");
         resetGatePanels();
+    }
+
+    function openMediafireInNewTab(url) {
+        var f = document.createElement("form");
+        f.setAttribute("method", "get");
+        f.setAttribute("action", url);
+        f.setAttribute("target", "_blank");
+        f.style.cssText = "position:fixed;left:0;top:0;width:1px;height:1px;opacity:0";
+        document.body.appendChild(f);
+        f.submit();
+        if (f.parentNode) {
+            f.parentNode.removeChild(f);
+        }
     }
 
     function showAdblockGate(url) {
@@ -200,6 +216,11 @@
         gateEl.hidden = false;
         document.body.classList.add("download-gate-open");
 
+        // Reiniciar estado: mostrar contador y ocultar botón MediaFire
+        var timerContainer = document.querySelector('.download-gate__timer');
+        if (timerContainer) timerContainer.hidden = false;
+        if (mediafireContainer) mediafireContainer.hidden = true;
+
         var left = GATE_SECONDS;
         countEl.textContent = String(left);
         setGateProgress(left);
@@ -210,10 +231,16 @@
                 window.clearInterval(gateTimer);
                 gateTimer = null;
                 gateActive = false;
-                resetGatePanels();
-                gateEl.hidden = true;
-                document.body.classList.remove("download-gate-open");
-                window.location.href = url;
+                
+                // Ocultar el contador y mostrar el botón de MediaFire
+                var timerContainer = document.querySelector('.download-gate__timer');
+                if (timerContainer) timerContainer.hidden = true;
+                if (mediafireContainer) {
+                    mediafireContainer.hidden = false;
+                    if (mediafireBtn) {
+                        mediafireBtn.href = url;
+                    }
+                }
                 return;
             }
             countEl.textContent = String(left);
@@ -246,8 +273,11 @@
             if (!url || url === "#") return;
             e.preventDefault();
             detectAdblock().then(function (blocked) {
-                if (blocked) showAdblockGate(url);
-                else openDownloadGate(url);
+                if (blocked) {
+                    showAdblockGate(url);
+                    return;
+                }
+                openDownloadGate(url);
             });
         });
     });
