@@ -239,6 +239,13 @@
                     mediafireContainer.hidden = false;
                     if (mediafireBtn) {
                         mediafireBtn.href = url;
+                        
+                        // Agregar event listener aquí, cuando el botón es visible
+                        mediafireBtn.onclick = function(e) {
+                            setTimeout(function() {
+                                closeDownloadGate();
+                            }, 100);
+                        };
                     }
                 }
                 return;
@@ -281,16 +288,4 @@
             });
         });
     });
-
-    // Cerrar modal automáticamente cuando se hace clic en el botón de MediaFire
-    var mediafireBtn = document.getElementById("mediafire-download-btn");
-    if (mediafireBtn) {
-        mediafireBtn.addEventListener("click", function (e) {
-            // No prevenir el comportamiento por defecto para que se abra el enlace
-            // pero cerrar el modal después de un pequeño delay
-            setTimeout(function() {
-                closeDownloadGate();
-            }, 100);
-        });
-    }
 })();
