@@ -645,7 +645,7 @@ body {
 
 /* --- Responsive Design for Mobile --- */
 @media (max-width: 768px) {
-    /* Logo Section - Mejorado para móvil */
+    /* Logo Section - Logo más grande y sin fondo en móvil */
     .logo-section {
         position: relative;
         top: auto;
@@ -653,22 +653,21 @@ body {
         display: flex;
         justify-content: center;
         align-items: center;
-        padding: 20px 0;
-        background: linear-gradient(135deg, rgba(0, 120, 212, 0.15), rgba(0, 204, 102, 0.1));
-        backdrop-filter: blur(15px);
-        border-bottom: 2px solid var(--glass-border);
-        margin-bottom: 25px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        padding: 30px 0;
+        background: transparent;
+        border: none;
+        margin-bottom: 30px;
+        box-shadow: none;
     }
     
     .logo-img {
-        height: 45px;
-        filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
+        height: 65px;
+        filter: drop-shadow(0 3px 12px rgba(0, 0, 0, 0.4));
         transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
     
     .logo-img:hover {
-        transform: scale(1.05);
+        transform: scale(1.1);
     }
     
     /* Main Container - Layout vertical optimizado y centrado */
