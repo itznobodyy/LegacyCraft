@@ -91,6 +91,7 @@ body {
     top: 20px;
     left: 20px;
     z-index: 1000;
+    transform-origin: top left;
 }
 
 .logo-link {
@@ -111,6 +112,7 @@ body {
     min-height: 100vh;
     padding: 80px 20px 20px 20px;
     gap: 20px;
+    transform-origin: top left;
 }
 
 /* --- Sidebar Menu --- */
@@ -121,6 +123,9 @@ body {
     border: 1px solid var(--glass-border);
     border-radius: var(--radius);
     padding: 20px 0;
+    min-width: 200px;
+    max-width: 200px;
+    flex-shrink: 0;
 }
 
 .menu-list {
@@ -167,6 +172,8 @@ body {
     display: flex;
     flex-direction: column;
     gap: 20px;
+    min-width: 0;
+    overflow: hidden;
 }
 
 /* --- Search Section --- */
@@ -558,6 +565,7 @@ body {
     display: flex;
     gap: 10px;
     z-index: 1000;
+    transform-origin: bottom left;
 }
 
 .social-icon {
