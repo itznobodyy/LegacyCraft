@@ -645,7 +645,7 @@ body {
 
 /* --- Responsive Design for Mobile --- */
 @media (max-width: 768px) {
-    /* Logo Section - Centrado como en la imagen */
+    /* Logo Section - Mejorado para móvil */
     .logo-section {
         position: relative;
         top: auto;
@@ -653,15 +653,22 @@ body {
         display: flex;
         justify-content: center;
         align-items: center;
-        padding: 15px 0;
-        background: var(--glass-bg);
-        backdrop-filter: blur(10px);
-        border-bottom: 1px solid var(--glass-border);
-        margin-bottom: 20px;
+        padding: 20px 0;
+        background: linear-gradient(135deg, rgba(0, 120, 212, 0.15), rgba(0, 204, 102, 0.1));
+        backdrop-filter: blur(15px);
+        border-bottom: 2px solid var(--glass-border);
+        margin-bottom: 25px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     }
     
     .logo-img {
-        height: 35px;
+        height: 45px;
+        filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .logo-img:hover {
+        transform: scale(1.05);
     }
     
     /* Main Container - Layout vertical optimizado */
@@ -862,41 +869,111 @@ body {
         line-height: 1.6;
     }
     
-    /* Info Cards - Diseño mejorado para inicio */
+    /* Info Cards - Diseño mejorado para móvil */
     .info-cards {
         grid-template-columns: 1fr;
         gap: 25px;
     }
     
     .info-card {
-        background: var(--glass-bg);
-        backdrop-filter: blur(10px);
-        border: 1px solid var(--glass-border);
-        border-radius: var(--radius);
-        padding: 20px;
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+        backdrop-filter: blur(15px);
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        border-radius: 20px;
+        padding: 25px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .info-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary-blue), var(--accent-green));
+        border-radius: 20px 20px 0 0;
+        opacity: 0.8;
+    }
+    
+    .info-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+        border-color: rgba(255, 255, 255, 0.3);
     }
     
     .info-card h2 {
-        font-size: 18px;
-        margin-bottom: 15px;
+        font-size: 20px;
+        margin-bottom: 20px;
         color: var(--text);
         text-align: center;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        position: relative;
+    }
+    
+    .info-card h2::after {
+        content: '';
+        position: absolute;
+        bottom: -8px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 50px;
+        height: 2px;
+        background: linear-gradient(90deg, var(--primary-blue), var(--accent-green));
+        border-radius: 1px;
     }
     
     .info-card ul, .info-card ol {
-        font-size: 14px;
-        color: var(--text-muted);
-        line-height: 1.6;
+        font-size: 15px;
+        color: var(--text);
+        line-height: 1.7;
+        margin: 0;
+        padding: 0;
+        list-style: none;
     }
     
     .info-card li {
-        margin-bottom: 10px;
+        margin-bottom: 15px;
+        padding: 12px 15px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        padding-left: 40px;
+    }
+    
+    .info-card li::before {
+        content: '>';
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--accent-green);
+        font-weight: 700;
+        font-size: 18px;
+    }
+    
+    .info-card li:hover {
+        background: rgba(255, 255, 255, 0.1);
+        transform: translateX(5px);
+        border-color: rgba(255, 255, 255, 0.2);
     }
     
     .info-card.highlight {
         border-color: var(--primary-blue);
-        background: rgba(0, 120, 212, 0.1);
+        background: linear-gradient(135deg, rgba(0, 120, 212, 0.2), rgba(255, 255, 255, 0.1));
+    }
+    
+    .info-card.highlight::before {
+        background: linear-gradient(90deg, var(--primary-blue), var(--accent-green));
+        opacity: 1;
+        height: 6px;
     }
     
     /* APK List - Cards modernos */
