@@ -1,8 +1,14 @@
 (function () {
-    var views = document.querySelectorAll(".view");
-    var navLinks = document.querySelectorAll(".nav-link[data-section]");
+    // Actualizar selectores para el nuevo diseño replicado
+    var views = document.querySelectorAll(".content-section");
+    var navLinks = document.querySelectorAll(".menu-item[data-section]");
 
     function sectionFromHash() {
+        // Siempre volver a inicio al recargar la página
+        if (window.performance && window.performance.navigation.type === 1) {
+            return "inicio";
+        }
+        
         var h = (window.location.hash || "#inicio").replace(/^#/, "");
         if (h === "aviso") h = "creditos";
         if (h === "inicio" || h === "apks" || h === "creditos") return h;
@@ -37,24 +43,286 @@
         showSection(sectionFromHash());
     });
 
-    if (!window.location.hash || window.location.hash === "#") {
+    // Siempre limpiar hash al recargar y volver a inicio
+    if (window.performance && window.performance.navigation.type === 1) {
+        if (history.replaceState) {
+            history.replaceState(null, "", "#inicio");
+        }
+    } else if (!window.location.hash || window.location.hash === "#") {
         if (history.replaceState) {
             history.replaceState(null, "", "#inicio");
         }
     }
     showSection(sectionFromHash());
 
-    var input = document.getElementById("apk-search");
+    // Búsqueda principal mejorada - busca cualquier cosa en la página
+    var mainSearch = document.getElementById("main-search");
     var list = document.getElementById("apk-list");
-    if (input && list) {
-        var items = list.querySelectorAll(".apk-item");
-        input.addEventListener("input", function () {
-            var q = input.value.trim().toLowerCase();
-            items.forEach(function (el) {
-                var hay = (el.getAttribute("data-search") || "") + " " + el.textContent;
-                hay = hay.toLowerCase();
-                el.hidden = q.length > 0 && hay.indexOf(q) === -1;
+    
+    if (mainSearch) {
+        mainSearch.addEventListener("input", function () {
+            var q = mainSearch.value.trim().toLowerCase();
+            if (q.length === 0) {
+                // Mostrar todo si no hay búsqueda
+                showAllContent();
+                return;
+            }
+            
+            // Detectar qué sección tiene mejores resultados y cambiar automáticamente
+            var bestSection = detectBestSection(q);
+            if (bestSection) {
+                switchToSection(bestSection);
+            }
+            
+            // Buscar en APKs
+            if (list) {
+                var apkItems = list.querySelectorAll(".apk-item");
+                apkItems.forEach(function (el) {
+                    var searchableText = getSearchableText(el);
+                    el.style.display = fuzzyMatch(q, searchableText) ? "" : "none";
+                });
+            }
+            
+            // Buscar en secciones de contenido
+            searchInSections(q);
+            
+            // Buscar en menú
+            searchInMenu(q);
+        });
+    }
+    
+    // Función para detectar la mejor sección para la búsqueda
+    function detectBestSection(query) {
+        var sectionScores = {};
+        
+        // Puntuar sección APKs
+        if (list) {
+            var apkItems = list.querySelectorAll(".apk-item");
+            var apkMatches = 0;
+            apkItems.forEach(function (el) {
+                var searchableText = getSearchableText(el);
+                if (fuzzyMatch(query, searchableText)) {
+                    apkMatches++;
+                    // Dar puntos extra por coincidencias importantes
+                    if (searchableText.includes('android') && query.includes('android')) {
+                        apkMatches += 2;
+                    }
+                    if (searchableText.includes('14') && query.includes('14')) {
+                        apkMatches += 2;
+                    }
+                    if (searchableText.includes('15') && query.includes('15')) {
+                        apkMatches += 2;
+                    }
+                }
             });
+            if (apkMatches > 0) {
+                sectionScores['apks'] = apkMatches;
+            }
+        }
+        
+        // Puntuar sección Inicio
+        var inicioSection = document.getElementById("inicio");
+        if (inicioSection) {
+            var inicioText = getSearchableText(inicioSection);
+            var inicioScore = fuzzyMatch(query, inicioText) ? 3 : 0;
+            
+            // Palabras clave específicas de Inicio
+            if (query.includes('bienven') || query.includes('inicio') || query.includes('descarg') || query.includes('instal')) {
+                inicioScore += 5;
+            }
+            
+            if (inicioScore > 0) {
+                sectionScores['inicio'] = inicioScore;
+            }
+        }
+        
+        // Puntuar sección Créditos
+        var creditosSection = document.getElementById("creditos");
+        if (creditosSection) {
+            var creditosText = getSearchableText(creditosSection);
+            var creditosScore = fuzzyMatch(query, creditosText) ? 2 : 0;
+            
+            // Palabras clave específicas de Créditos
+            if (query.includes('credit') || query.includes('autor') || query.includes('github') || query.includes('discord')) {
+                creditosScore += 5;
+            }
+            
+            if (creditosScore > 0) {
+                sectionScores['creditos'] = creditosScore;
+            }
+        }
+        
+        // Encontrar la sección con mayor puntuación
+        var bestSection = null;
+        var maxScore = 0;
+        
+        for (var section in sectionScores) {
+            if (sectionScores[section] > maxScore) {
+                maxScore = sectionScores[section];
+                bestSection = section;
+            }
+        }
+        
+        return bestSection;
+    }
+    
+    // Función para cambiar a una sección específica
+    function switchToSection(sectionId) {
+        // Guardar el foco del buscador
+        var searchInput = document.getElementById("main-search");
+        var wasFocused = searchInput && document.activeElement === searchInput;
+        var searchValue = searchInput ? searchInput.value : "";
+        
+        // Actualizar hash y mostrar sección
+        if (window.location.hash !== "#" + sectionId) {
+            window.location.hash = sectionId;
+        } else {
+            showSection(sectionId);
+        }
+        
+        // Actualizar menú activo
+        var navLinks = document.querySelectorAll(".menu-item[data-section]");
+        navLinks.forEach(function (a) {
+            a.classList.toggle("is-active", a.getAttribute("data-section") === sectionId);
+        });
+        
+        // Restaurar el foco y el valor del buscador si estaba enfocado
+        if (wasFocused && searchInput) {
+            setTimeout(function() {
+                searchInput.focus();
+                searchInput.value = searchValue;
+            }, 10);
+        }
+    }
+    
+    // Función para obtener todo el texto searchable de un elemento
+    function getSearchableText(element) {
+        var texts = [];
+        
+        // Atributo data-search
+        var dataSearch = element.getAttribute("data-search");
+        if (dataSearch) texts.push(dataSearch);
+        
+        // Texto del elemento
+        texts.push(element.textContent || element.innerText);
+        
+        // Títulos y descripciones importantes
+        var titles = element.querySelectorAll("h1, h2, h3, .apk-name, .section-title");
+        titles.forEach(function(title) {
+            texts.push(title.textContent || title.innerText);
+        });
+        
+        var descriptions = element.querySelectorAll("p, .apk-desc, .section-description");
+        descriptions.forEach(function(desc) {
+            texts.push(desc.textContent || desc.innerText);
+        });
+        
+        // Características y etiquetas
+        var features = element.querySelectorAll("li, .apk-tag, .apk-date");
+        features.forEach(function(feature) {
+            texts.push(feature.textContent || feature.innerText);
+        });
+        
+        return texts.join(" ").toLowerCase();
+    }
+    
+    // Función de búsqueda difusa (tolerante a errores)
+    function fuzzyMatch(query, text) {
+        if (!query || !text) return false;
+        
+        // Búsqueda exacta primero
+        if (text.includes(query)) return true;
+        
+        // Búsqueda de palabras individuales
+        var queryWords = query.split(" ").filter(function(word) { return word.length > 0; });
+        var textWords = text.split(" ").filter(function(word) { return word.length > 0; });
+        
+        // Si todas las palabras de la consulta están en el texto
+        var allWordsFound = queryWords.every(function(qWord) {
+            return textWords.some(function(tWord) {
+                return tWord.includes(qWord) || qWord.includes(tWord) || 
+                       levenshteinDistance(qWord, tWord) <= Math.max(1, Math.floor(qWord.length * 0.3));
+            });
+        });
+        
+        if (allWordsFound) return true;
+        
+        // Búsqueda por subcadenas
+        return queryWords.some(function(qWord) {
+            return textWords.some(function(tWord) {
+                return tWord.includes(qWord) || qWord.includes(tWord);
+            });
+        });
+    }
+    
+    // Distancia de Levenshtein simple (para tolerancia a errores)
+    function levenshteinDistance(str1, str2) {
+        var matrix = [];
+        var i, j;
+        
+        for (i = 0; i <= str2.length; i++) {
+            matrix[i] = [i];
+        }
+        
+        for (j = 0; j <= str1.length; j++) {
+            matrix[0][j] = j;
+        }
+        
+        for (i = 1; i <= str2.length; i++) {
+            for (j = 1; j <= str1.length; j++) {
+                if (str2.charAt(i - 1) === str1.charAt(j - 1)) {
+                    matrix[i][j] = matrix[i - 1][j - 1];
+                } else {
+                    matrix[i][j] = Math.min(
+                        matrix[i - 1][j - 1] + 1,
+                        matrix[i][j - 1] + 1,
+                        matrix[i - 1][j] + 1
+                    );
+                }
+            }
+        }
+        
+        return matrix[str2.length][str1.length];
+    }
+    
+    // Función para mostrar todo el contenido
+    function showAllContent() {
+        // Mostrar todos los APKs
+        if (list) {
+            var apkItems = list.querySelectorAll(".apk-item");
+            apkItems.forEach(function (el) {
+                el.style.display = "";
+            });
+        }
+        
+        // Mostrar todas las secciones
+        var sections = document.querySelectorAll(".content-section");
+        sections.forEach(function(section) {
+            section.style.display = "";
+        });
+        
+        // Mostrar todos los menús
+        var menuItems = document.querySelectorAll(".menu-item");
+        menuItems.forEach(function(item) {
+            item.style.display = "";
+        });
+    }
+    
+    // Buscar en secciones de contenido
+    function searchInSections(query) {
+        var sections = document.querySelectorAll(".content-section");
+        sections.forEach(function(section) {
+            var searchableText = getSearchableText(section);
+            section.style.display = fuzzyMatch(query, searchableText) ? "" : "none";
+        });
+    }
+    
+    // Buscar en menú
+    function searchInMenu(query) {
+        var menuItems = document.querySelectorAll(".menu-item");
+        menuItems.forEach(function(item) {
+            var searchableText = item.textContent || item.innerText;
+            item.style.display = fuzzyMatch(query, searchableText.toLowerCase()) ? "" : "none";
         });
     }
 
@@ -260,6 +528,15 @@
             if (gateEl && !gateEl.hidden) closeDownloadGate();
         });
     }
+    
+    // También cerrar al hacer clic fuera del contenido del modal
+    if (gateEl) {
+        gateEl.addEventListener("click", function (e) {
+            if (e.target === gateEl || e.target === gateBackdrop) {
+                if (!gateEl.hidden) closeDownloadGate();
+            }
+        });
+    }
 
     var retryAdblockBtn = document.getElementById("download-gate-retry-adblock");
     if (retryAdblockBtn) {
@@ -274,8 +551,74 @@
         });
     }
 
+    // Variables para el selector de Android
+    var androidSelectorEl = document.getElementById("android-selector");
+    var androidSelectorBackdrop = androidSelectorEl ? androidSelectorEl.querySelector(".download-gate__backdrop") : null;
+
+    // Función para mostrar el selector de Android
+    function showAndroidSelector() {
+        if (androidSelectorEl) {
+            androidSelectorEl.hidden = false;
+            document.body.classList.add("download-gate-open");
+        }
+    }
+
+    // Función para cerrar el selector de Android
+    function closeAndroidSelector() {
+        if (androidSelectorEl) {
+            androidSelectorEl.hidden = true;
+            document.body.classList.remove("download-gate-open");
+        }
+    }
+
+    // Event listeners para el selector de Android
+    if (androidSelectorBackdrop) {
+        androidSelectorBackdrop.addEventListener("click", function () {
+            closeAndroidSelector();
+        });
+    }
+    
+    // También cerrar al hacer clic fuera del contenido del selector de Android
+    if (androidSelectorEl) {
+        androidSelectorEl.addEventListener("click", function (e) {
+            if (e.target === androidSelectorEl || e.target === androidSelectorBackdrop) {
+                if (!androidSelectorEl.hidden) closeAndroidSelector();
+            }
+        });
+    }
+
+    document.querySelectorAll(".android-selector-btn").forEach(function (btn) {
+        btn.addEventListener("click", function (e) {
+            e.preventDefault();
+            var url = btn.getAttribute("data-url");
+            if (!url) return;
+            
+            // Cerrar selector de Android
+            closeAndroidSelector();
+            
+            // Abrir el modal de descarga normal con la URL seleccionada
+            detectAdblock().then(function (blocked) {
+                if (blocked) {
+                    showAdblockGate(url);
+                    return;
+                }
+                openDownloadGate(url);
+            });
+        });
+    });
+
     document.querySelectorAll(".btn-download-gate").forEach(function (btn) {
         btn.addEventListener("click", function (e) {
+            var version = btn.getAttribute("data-version");
+            
+            // Si es la versión 0.15.10, mostrar selector de Android
+            if (version === "0.15.10") {
+                e.preventDefault();
+                showAndroidSelector();
+                return;
+            }
+            
+            // Para otras versiones, usar el flujo normal
             var url = btn.getAttribute("href");
             if (!url || url === "#") return;
             e.preventDefault();
