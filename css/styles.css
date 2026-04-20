@@ -734,6 +734,7 @@ body {
         display: flex;
         flex-direction: column;
         align-items: center;
+        gap: 40px;
     }
     
     /* Search Section - Más prominente */
@@ -853,17 +854,20 @@ body {
         color: white;
     }
     
-    /* Content Sections - Cards modernos y centrados */
+    /* Content Sections - Cards modernos y centrados con separación */
     .content-section {
-        padding: 0;
-        background: transparent;
-        border: none;
-        border-radius: 0;
+        padding: 30px 20px;
+        background: var(--glass-bg);
+        backdrop-filter: blur(10px);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius);
         width: 100%;
         max-width: 600px;
         display: flex;
         flex-direction: column;
         align-items: center;
+        margin: 0;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
     }
     
     .section-title {
