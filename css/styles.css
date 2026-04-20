@@ -671,11 +671,13 @@ body {
         transform: scale(1.05);
     }
     
-    /* Main Container - Layout vertical optimizado */
+    /* Main Container - Layout vertical optimizado y centrado */
     .main-container {
         flex-direction: column;
         padding: 0 15px 80px 15px;
         gap: 20px;
+        align-items: center;
+        justify-content: center;
     }
     
     /* Sidebar Menu - Horizontal como en la imagen */
@@ -727,6 +729,11 @@ body {
     /* Content Main */
     .content-main {
         order: 1;
+        width: 100%;
+        max-width: 600px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
     }
     
     /* Search Section - Más prominente */
@@ -846,12 +853,17 @@ body {
         color: white;
     }
     
-    /* Content Sections - Cards modernos */
+    /* Content Sections - Cards modernos y centrados */
     .content-section {
         padding: 0;
         background: transparent;
         border: none;
         border-radius: 0;
+        width: 100%;
+        max-width: 600px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
     }
     
     .section-title {
@@ -869,10 +881,15 @@ body {
         line-height: 1.6;
     }
     
-    /* Info Cards - Diseño mejorado para móvil */
+    /* Info Cards - Diseño mejorado y centrado para móvil */
     .info-cards {
         grid-template-columns: 1fr;
         gap: 25px;
+        width: 100%;
+        max-width: 600px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
     }
     
     .info-card {
