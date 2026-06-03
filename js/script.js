@@ -614,7 +614,13 @@
             // Si es la versión 0.15.10, mostrar selector de Android
             if (version === "0.15.10") {
                 e.preventDefault();
-                showAndroidSelector();
+                detectAdblock().then(function (blocked) {
+                    if (blocked) {
+                        showAdblockGate("#");
+                        return;
+                    }
+                    showAndroidSelector();
+                });
                 return;
             }
             
