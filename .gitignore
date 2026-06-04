@@ -1,6 +1,17 @@
+# Scripts locales
 script.py
-src/
-bin/
+*.py
+
+# Supabase (solo para referencia local)
 supabase-rls.sql
 supabase-ratings.sql
-*.py
+
+# Código fuente PHP (no es parte del sitio web)
+src/
+bin/
+
+# Archivos de editor
+.vscode/
+
+# Netlify _headers redundante (usamos netlify.toml)
+_headers
