@@ -464,6 +464,12 @@ body {
     margin-bottom: 12px;
 }
 .apk-info { display: flex; flex-direction: column; gap: 4px; }
+.apk-name-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
 .apk-date { font-size: 12px; color: var(--text-dim); }
 
 /* Contenedor de acciones (tamaño + botón) */
@@ -1402,17 +1408,10 @@ body.download-gate-open { overflow: hidden; }
         margin-bottom: 12px;
     }
     .apk-name { font-size: 17px; }
-    .apk-actions {
-        flex-direction: row;
-        align-items: center;
-        width: 100%;
-        justify-content: space-between;
-    }
-    .apk-size-badge { font-size: 12px; }
     .btn-download {
-        width: auto;
-        padding: 12px 20px;
-        font-size: 14px;
+        width: 100%;
+        padding: 14px;
+        font-size: 15px;
         border-radius: 12px;
         text-align: center;
         box-shadow: 0 4px 22px var(--blue-glow);
