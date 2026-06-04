@@ -462,6 +462,118 @@
     var SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt0ZmtoZXZqeGtna2Nmdmx0dWV5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MTkyNTYsImV4cCI6MjA5NjA5NTI1Nn0.-gbuid_5PjIw9szdUCRs7OgL81oougTU7mv3s_S8PJY";
     var TABLE  = "visitors";
     var LS_KEY = "lc_visitor_id";
+    var LS_REGISTERED = "lc_registered"; // flag: ya se registró, no volver a intentar
+    var LS_LAST_CHECK = "lc_last_check"; // timestamp del último check (rate limit local)
+    var CHECK_COOLDOWN = 60 * 60 * 1000; // 1 hora entre registros remotos
+
+    var countEl = document.getElementById("visitor-count");
+    if (!countEl) return;
+
+    // Sanitizar input — el UUID solo puede tener hex y guiones
+    function isValidUUID(str) {
+        return /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(str);
+    }
+
+    function getVisitorId() {
+        var id = localStorage.getItem(LS_KEY);
+        // Validar que el ID almacenado sea un UUID válido (no fue manipulado)
+        if (id && !isValidUUID(id)) {
+            localStorage.removeItem(LS_KEY);
+            id = null;
+        }
+        if (!id) {
+            id = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
+                var r = Math.random() * 16 | 0;
+                return (c === "x" ? r : (r & 0x3 | 0x8)).toString(16);
+            });
+            localStorage.setItem(LS_KEY, id);
+        }
+        return id;
+    }
+
+    // Rate limit local: no hacer fetch si ya se hizo hace menos de 1 hora
+    function canCheck() {
+        var last = parseInt(localStorage.getItem(LS_LAST_CHECK) || "0", 10);
+        return Date.now() - last > CHECK_COOLDOWN;
+    }
+
+    function markChecked() {
+        localStorage.setItem(LS_LAST_CHECK, String(Date.now()));
+    }
+
+    var headers = {
+        "apikey": SUPABASE_KEY,
+        "Authorization": "Bearer " + SUPABASE_KEY
+    };
+
+    function fetchCount() {
+        return fetch(SUPABASE_URL + "/rest/v1/" + TABLE + "?select=id", {
+            headers: Object.assign({}, headers, {
+                "Prefer": "count=exact",
+                "Range": "0-0"
+            })
+        }).then(function (res) {
+            var cr = res.headers.get("content-range");
+            if (cr) {
+                var n = parseInt(cr.split("/")[1], 10);
+                return isNaN(n) ? 0 : n;
+            }
+            return 0;
+        });
+    }
+
+    function registerVisit(visitorId) {
+        // Doble check: si ya está marcado como registrado, solo fetch el conteo
+        if (localStorage.getItem(LS_REGISTERED) === "1") {
+            return Promise.resolve();
+        }
+        return fetch(SUPABASE_URL + "/rest/v1/" + TABLE + "?id=eq." + visitorId + "&select=id", {
+            headers: headers
+        })
+        .then(function (res) {
+            if (!res.ok) throw new Error("select failed");
+            return res.json();
+        })
+        .then(function (rows) {
+            if (rows && rows.length > 0) {
+                // Ya existe — marcar localmente para no volver a consultar
+                localStorage.setItem(LS_REGISTERED, "1");
+                return;
+            }
+            return fetch(SUPABASE_URL + "/rest/v1/" + TABLE, {
+                method: "POST",
+                headers: Object.assign({}, headers, {
+                    "Content-Type": "application/json",
+                    "Prefer": "return=minimal"
+                }),
+                body: JSON.stringify({ id: visitorId })
+            }).then(function (res) {
+                if (!res.ok) throw new Error("POST failed: " + res.status);
+                localStorage.setItem(LS_REGISTERED, "1");
+                markChecked();
+            });
+        });
+    }
+
+    var visitorId = getVisitorId();
+
+    // Si no puede hacer check ahora (rate limit), solo mostrar el conteo
+    if (!canCheck() && localStorage.getItem(LS_REGISTERED) === "1") {
+        fetchCount()
+            .then(function (n) { countEl.textContent = n.toLocaleString("es"); })
+            .catch(function () { countEl.textContent = "—"; });
+        return;
+    }
+
+    registerVisit(visitorId)
+        .then(function () { return fetchCount(); })
+        .then(function (count) {
+            countEl.textContent = count.toLocaleString("es");
+        })
+        .catch(function () {
+            countEl.textContent = "—";
+        });
+})();
 
     var countEl = document.getElementById("visitor-count");
     if (!countEl) return;

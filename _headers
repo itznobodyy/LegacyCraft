@@ -1,0 +1,21 @@
+/*
+  # Bloquea que tu página se cargue dentro de un iframe (clickjacking)
+  X-Frame-Options: DENY
+
+  # Evita que el navegador adivine el tipo de archivo (MIME sniffing)
+  X-Content-Type-Options: nosniff
+
+  # Activa protección XSS en navegadores antiguos
+  X-XSS-Protection: 1; mode=block
+
+  # Solo HTTPS, nunca HTTP (HSTS)
+  Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+
+  # No enviar referrer a sitios externos
+  Referrer-Policy: strict-origin-when-cross-origin
+
+  # Limitar permisos del navegador
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
+
+  # Content Security Policy — solo carga recursos de orígenes conocidos
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://ktfkhevjxkgkcfvltuey.supabase.co https://pagead2.googlesyndication.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self' https://www.mediafire.com
