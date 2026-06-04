@@ -29,9 +29,15 @@
     function showSection(id) {
         views.forEach(function (el) {
             var on = el.getAttribute("data-view") === id;
-            el.classList.toggle("is-active", on);
-            // FIX #15 â€” limpiar inline display para no pisar la clase is-active
-            el.style.display = "";
+            if (on) {
+                el.classList.remove("is-active");
+                el.style.display = "";
+                void el.offsetWidth; /* reflow para reiniciar animacion CSS */
+                el.classList.add("is-active");
+            } else {
+                el.classList.remove("is-active");
+                el.style.display = "";
+            }
         });
         navLinks.forEach(function (a) {
             a.classList.toggle("is-active", a.getAttribute("data-section") === id);
