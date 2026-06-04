@@ -594,6 +594,7 @@
             if (rows && rows.length > 0) {
                 // Ya existe â€” marcar localmente para no volver a consultar
                 localStorage.setItem(LS_REGISTERED, "1");
+                markChecked();
                 return;
             }
             return fetch(SUPABASE_URL + "/rest/v1/" + TABLE, {
@@ -613,20 +614,21 @@
 
     var visitorId = getVisitorId();
 
-    // Si no puede hacer check ahora (rate limit), solo mostrar el conteo
-    if (!canCheck() && localStorage.getItem(LS_REGISTERED) === "1") {
+    // Si ya esta registrado, solo mostrar el conteo — nunca reintentar registro
+    if (localStorage.getItem(LS_REGISTERED) === "1") {
         fetchCount()
             .then(function (n) { countEl.textContent = n.toLocaleString("es"); })
-            .catch(function () { countEl.textContent = "â€”"; });
+            .catch(function () { countEl.textContent = "—"; });
         return;
     }
 
+    // Primera vez: intentar registrar y luego mostrar conteo
     registerVisit(visitorId)
         .then(function () { return fetchCount(); })
         .then(function (count) {
             countEl.textContent = count.toLocaleString("es");
         })
         .catch(function () {
-            countEl.textContent = "â€”";
+            countEl.textContent = "—";
         });
 })();
