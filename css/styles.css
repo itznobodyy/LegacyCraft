@@ -995,7 +995,7 @@ body {
 .srv-rank--1 { background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff; box-shadow: 0 2px 10px rgba(245,158,11,0.5); }
 .srv-rank--2 { background: linear-gradient(135deg, #94a3b8, #64748b); color: #fff; box-shadow: 0 2px 10px rgba(148,163,184,0.4); }
 .srv-rank--3 { background: linear-gradient(135deg, #b45309, #92400e); color: #fff; box-shadow: 0 2px 10px rgba(180,83,9,0.4); }
-.srv-rank--n { background: rgba(255,255,255,0.07); color: var(--text-dim); }
+.srv-rank--n { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: #ffffff; font-weight: 700; text-shadow: 0 1px 3px rgba(0,0,0,0.6); }
 
 /* Stars rating */
 .srv-stars {
