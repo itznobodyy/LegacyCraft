@@ -359,18 +359,18 @@
     }
 
     /* ── Renderizar todos los servidores online ordenados ── */
-    function renderServers(onlineList) {
+    function renderServers(serverList) {
         var container = document.getElementById("servers-container");
         if (!container) return;
 
         container.innerHTML = "";
 
-        if (allServers.length === 0) {
+        if (!serverList || serverList.length === 0) {
             container.innerHTML = '<p class="srv-empty">No hay servidores online en este momento.</p>';
             return;
         }
 
-        allServers.forEach(function (item, idx) {
+        serverList.forEach(function (item, idx) {
             /* Solo los online tienen ranking */
             var rank = (item.data && item.data.online) ? (idx + 1) : null;
             var card = createCard(item.server, rank, item.data);
@@ -422,15 +422,15 @@
             /* Separar online y offline — mostrar online primero, luego offline */
             var online  = results.filter(function (item) { return item.data && item.data.online; });
             var offline = results.filter(function (item) { return !item.data || !item.data.online; });
-            var allServers = online.concat(offline);
 
-            /* Ordenar online por jugadores descendente */
+            /* Ordenar online por jugadores descendente ANTES del concat */
             online.sort(function (a, b) {
                 var aP = a.data && a.data.players ? a.data.players.online || 0 : 0;
                 var bP = b.data && b.data.players ? b.data.players.online || 0 : 0;
                 return bP - aP;
             });
 
+            var allServers = online.concat(offline);
             renderServers(allServers);
         });
     }
