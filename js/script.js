@@ -1,14 +1,25 @@
 (function () {
-    // Actualizar selectores para el nuevo diseño replicado
-    var views = document.querySelectorAll(".content-section");
+
+    /* ============================================================
+       NAVEGACIÓN POR SECCIONES
+    ============================================================ */
+    var views    = document.querySelectorAll(".content-section");
     var navLinks = document.querySelectorAll(".menu-item[data-section]");
 
-    function sectionFromHash() {
-        // Siempre volver a inicio al recargar la página
-        if (window.performance && window.performance.navigation.type === 1) {
-            return "inicio";
+    // FIX #14 — usar PerformanceNavigationTiming en lugar del deprecado
+    function isReload() {
+        try {
+            var nav = performance.getEntriesByType("navigation")[0];
+            return nav && nav.type === "reload";
+        } catch (e) {
+            // Fallback para navegadores muy antiguos
+            return !!(window.performance && window.performance.navigation &&
+                      window.performance.navigation.type === 1);
         }
-        
+    }
+
+    function sectionFromHash() {
+        if (isReload()) return "inicio";
         var h = (window.location.hash || "#inicio").replace(/^#/, "");
         if (h === "aviso") h = "creditos";
         if (h === "inicio" || h === "apks" || h === "creditos") return h;
@@ -17,9 +28,10 @@
 
     function showSection(id) {
         views.forEach(function (el) {
-            var v = el.getAttribute("data-view");
-            var on = v === id;
+            var on = el.getAttribute("data-view") === id;
             el.classList.toggle("is-active", on);
+            // FIX #15 — limpiar inline display para no pisar la clase is-active
+            el.style.display = "";
         });
         navLinks.forEach(function (a) {
             a.classList.toggle("is-active", a.getAttribute("data-section") === id);
@@ -43,301 +55,169 @@
         showSection(sectionFromHash());
     });
 
-    // Siempre limpiar hash al recargar y volver a inicio
-    if (window.performance && window.performance.navigation.type === 1) {
-        if (history.replaceState) {
-            history.replaceState(null, "", "#inicio");
-        }
+    if (isReload()) {
+        if (history.replaceState) history.replaceState(null, "", "#inicio");
     } else if (!window.location.hash || window.location.hash === "#") {
-        if (history.replaceState) {
-            history.replaceState(null, "", "#inicio");
-        }
+        if (history.replaceState) history.replaceState(null, "", "#inicio");
     }
     showSection(sectionFromHash());
 
-    // Búsqueda principal mejorada - busca cualquier cosa en la página
+
+    /* ============================================================
+       BUSCADOR
+    ============================================================ */
     var mainSearch = document.getElementById("main-search");
     var list = document.getElementById("apk-list");
-    
+
     if (mainSearch) {
         mainSearch.addEventListener("input", function () {
             var q = mainSearch.value.trim().toLowerCase();
             if (q.length === 0) {
-                // Mostrar todo si no hay búsqueda
                 showAllContent();
                 return;
             }
-            
-            // Detectar qué sección tiene mejores resultados y cambiar automáticamente
             var bestSection = detectBestSection(q);
-            if (bestSection) {
-                switchToSection(bestSection);
-            }
-            
-            // Buscar en APKs
+            if (bestSection) switchToSection(bestSection);
+
             if (list) {
-                var apkItems = list.querySelectorAll(".apk-item");
-                apkItems.forEach(function (el) {
-                    var searchableText = getSearchableText(el);
-                    el.style.display = fuzzyMatch(q, searchableText) ? "" : "none";
+                list.querySelectorAll(".apk-item").forEach(function (el) {
+                    el.style.display = fuzzyMatch(q, getSearchableText(el)) ? "" : "none";
                 });
             }
-            
-            // Buscar en secciones de contenido
-            searchInSections(q);
-            
-            // Buscar en menú
+
+            // FIX #15 — searchInSections solo filtra menú, no sections
+            // (la sección activa ya cambia via switchToSection)
             searchInMenu(q);
         });
     }
-    
-    // Función para detectar la mejor sección para la búsqueda
+
     function detectBestSection(query) {
-        var sectionScores = {};
-        
-        // Puntuar sección APKs
+        var scores = {};
         if (list) {
-            var apkItems = list.querySelectorAll(".apk-item");
-            var apkMatches = 0;
-            apkItems.forEach(function (el) {
-                var searchableText = getSearchableText(el);
-                if (fuzzyMatch(query, searchableText)) {
-                    apkMatches++;
-                    // Dar puntos extra por coincidencias importantes
-                    if (searchableText.includes('android') && query.includes('android')) {
-                        apkMatches += 2;
-                    }
-                    if (searchableText.includes('14') && query.includes('14')) {
-                        apkMatches += 2;
-                    }
-                    if (searchableText.includes('15') && query.includes('15')) {
-                        apkMatches += 2;
-                    }
-                }
+            var hits = 0;
+            list.querySelectorAll(".apk-item").forEach(function (el) {
+                if (fuzzyMatch(query, getSearchableText(el))) hits++;
             });
-            if (apkMatches > 0) {
-                sectionScores['apks'] = apkMatches;
-            }
+            if (hits) scores.apks = hits;
         }
-        
-        // Puntuar sección Inicio
-        var inicioSection = document.getElementById("inicio");
-        if (inicioSection) {
-            var inicioText = getSearchableText(inicioSection);
-            var inicioScore = fuzzyMatch(query, inicioText) ? 3 : 0;
-            
-            // Palabras clave específicas de Inicio
-            if (query.includes('bienven') || query.includes('inicio') || query.includes('descarg') || query.includes('instal')) {
-                inicioScore += 5;
-            }
-            
-            if (inicioScore > 0) {
-                sectionScores['inicio'] = inicioScore;
-            }
+        var inicioEl = document.getElementById("inicio");
+        if (inicioEl) {
+            var s = fuzzyMatch(query, getSearchableText(inicioEl)) ? 3 : 0;
+            if (/bienven|inicio|descarg|instal/.test(query)) s += 5;
+            if (s) scores.inicio = s;
         }
-        
-        // Puntuar sección Créditos
-        var creditosSection = document.getElementById("creditos");
-        if (creditosSection) {
-            var creditosText = getSearchableText(creditosSection);
-            var creditosScore = fuzzyMatch(query, creditosText) ? 2 : 0;
-            
-            // Palabras clave específicas de Créditos
-            if (query.includes('credit') || query.includes('autor') || query.includes('github') || query.includes('discord')) {
-                creditosScore += 5;
-            }
-            
-            if (creditosScore > 0) {
-                sectionScores['creditos'] = creditosScore;
-            }
+        var creditosEl = document.getElementById("creditos");
+        if (creditosEl) {
+            var c = fuzzyMatch(query, getSearchableText(creditosEl)) ? 2 : 0;
+            if (/credit|autor|github|discord/.test(query)) c += 5;
+            if (c) scores.creditos = c;
         }
-        
-        // Encontrar la sección con mayor puntuación
-        var bestSection = null;
-        var maxScore = 0;
-        
-        for (var section in sectionScores) {
-            if (sectionScores[section] > maxScore) {
-                maxScore = sectionScores[section];
-                bestSection = section;
-            }
+        var best = null, max = 0;
+        for (var k in scores) {
+            if (scores[k] > max) { max = scores[k]; best = k; }
         }
-        
-        return bestSection;
+        return best;
     }
-    
-    // Función para cambiar a una sección específica
+
+    // FIX #20 — eliminar shadowing de navLinks
     function switchToSection(sectionId) {
-        // Guardar el foco del buscador
         var searchInput = document.getElementById("main-search");
         var wasFocused = searchInput && document.activeElement === searchInput;
         var searchValue = searchInput ? searchInput.value : "";
-        
-        // Actualizar hash y mostrar sección
+
         if (window.location.hash !== "#" + sectionId) {
             window.location.hash = sectionId;
         } else {
             showSection(sectionId);
         }
-        
-        // Actualizar menú activo
-        var navLinks = document.querySelectorAll(".menu-item[data-section]");
         navLinks.forEach(function (a) {
             a.classList.toggle("is-active", a.getAttribute("data-section") === sectionId);
         });
-        
-        // Restaurar el foco y el valor del buscador si estaba enfocado
+
         if (wasFocused && searchInput) {
-            setTimeout(function() {
+            setTimeout(function () {
                 searchInput.focus();
                 searchInput.value = searchValue;
             }, 10);
         }
     }
-    
-    // Función para obtener todo el texto searchable de un elemento
+
     function getSearchableText(element) {
         var texts = [];
-        
-        // Atributo data-search
-        var dataSearch = element.getAttribute("data-search");
-        if (dataSearch) texts.push(dataSearch);
-        
-        // Texto del elemento
-        texts.push(element.textContent || element.innerText);
-        
-        // Títulos y descripciones importantes
-        var titles = element.querySelectorAll("h1, h2, h3, .apk-name, .section-title");
-        titles.forEach(function(title) {
-            texts.push(title.textContent || title.innerText);
-        });
-        
-        var descriptions = element.querySelectorAll("p, .apk-desc, .section-description");
-        descriptions.forEach(function(desc) {
-            texts.push(desc.textContent || desc.innerText);
-        });
-        
-        // Características y etiquetas
-        var features = element.querySelectorAll("li, .apk-tag, .apk-date");
-        features.forEach(function(feature) {
-            texts.push(feature.textContent || feature.innerText);
-        });
-        
+        var ds = element.getAttribute && element.getAttribute("data-search");
+        if (ds) texts.push(ds);
+        texts.push(element.textContent || element.innerText || "");
         return texts.join(" ").toLowerCase();
     }
-    
-    // Función de búsqueda difusa (tolerante a errores)
+
     function fuzzyMatch(query, text) {
         if (!query || !text) return false;
-        
-        // Búsqueda exacta primero
         if (text.includes(query)) return true;
-        
-        // Búsqueda de palabras individuales
-        var queryWords = query.split(" ").filter(function(word) { return word.length > 0; });
-        var textWords = text.split(" ").filter(function(word) { return word.length > 0; });
-        
-        // Si todas las palabras de la consulta están en el texto
-        var allWordsFound = queryWords.every(function(qWord) {
-            return textWords.some(function(tWord) {
-                return tWord.includes(qWord) || qWord.includes(tWord) || 
-                       levenshteinDistance(qWord, tWord) <= Math.max(1, Math.floor(qWord.length * 0.3));
+        var qWords = query.split(" ").filter(Boolean);
+        var tWords = text.split(" ").filter(Boolean);
+        return qWords.every(function (qw) {
+            return tWords.some(function (tw) {
+                return tw.includes(qw) || qw.includes(tw) ||
+                    levenshteinDistance(qw, tw) <= Math.max(1, Math.floor(qw.length * 0.3));
             });
-        });
-        
-        if (allWordsFound) return true;
-        
-        // Búsqueda por subcadenas
-        return queryWords.some(function(qWord) {
-            return textWords.some(function(tWord) {
-                return tWord.includes(qWord) || qWord.includes(tWord);
-            });
-        });
-    }
-    
-    // Distancia de Levenshtein simple (para tolerancia a errores)
-    function levenshteinDistance(str1, str2) {
-        var matrix = [];
-        var i, j;
-        
-        for (i = 0; i <= str2.length; i++) {
-            matrix[i] = [i];
-        }
-        
-        for (j = 0; j <= str1.length; j++) {
-            matrix[0][j] = j;
-        }
-        
-        for (i = 1; i <= str2.length; i++) {
-            for (j = 1; j <= str1.length; j++) {
-                if (str2.charAt(i - 1) === str1.charAt(j - 1)) {
-                    matrix[i][j] = matrix[i - 1][j - 1];
-                } else {
-                    matrix[i][j] = Math.min(
-                        matrix[i - 1][j - 1] + 1,
-                        matrix[i][j - 1] + 1,
-                        matrix[i - 1][j] + 1
-                    );
-                }
-            }
-        }
-        
-        return matrix[str2.length][str1.length];
-    }
-    
-    // Función para mostrar todo el contenido
-    function showAllContent() {
-        // Mostrar todos los APKs
-        if (list) {
-            var apkItems = list.querySelectorAll(".apk-item");
-            apkItems.forEach(function (el) {
-                el.style.display = "";
-            });
-        }
-        
-        // Mostrar todas las secciones
-        var sections = document.querySelectorAll(".content-section");
-        sections.forEach(function(section) {
-            section.style.display = "";
-        });
-        
-        // Mostrar todos los menús
-        var menuItems = document.querySelectorAll(".menu-item");
-        menuItems.forEach(function(item) {
-            item.style.display = "";
-        });
-    }
-    
-    // Buscar en secciones de contenido
-    function searchInSections(query) {
-        var sections = document.querySelectorAll(".content-section");
-        sections.forEach(function(section) {
-            var searchableText = getSearchableText(section);
-            section.style.display = fuzzyMatch(query, searchableText) ? "" : "none";
-        });
-    }
-    
-    // Buscar en menú
-    function searchInMenu(query) {
-        var menuItems = document.querySelectorAll(".menu-item");
-        menuItems.forEach(function(item) {
-            var searchableText = item.textContent || item.innerText;
-            item.style.display = fuzzyMatch(query, searchableText.toLowerCase()) ? "" : "none";
         });
     }
 
-    var GATE_SECONDS = 10;
-    var gateEl = document.getElementById("download-gate");
-    var panelMain = document.getElementById("download-gate-panel-main");
-    var panelAdblock = document.getElementById("download-gate-panel-adblock");
-    var countEl = document.getElementById("download-count");
-    var progressBar = document.getElementById("download-progress-bar");
+    function levenshteinDistance(a, b) {
+        var m = [], i, j;
+        for (i = 0; i <= b.length; i++) m[i] = [i];
+        for (j = 0; j <= a.length; j++) m[0][j] = j;
+        for (i = 1; i <= b.length; i++) {
+            for (j = 1; j <= a.length; j++) {
+                m[i][j] = b[i-1] === a[j-1] ? m[i-1][j-1] :
+                    Math.min(m[i-1][j-1]+1, m[i][j-1]+1, m[i-1][j]+1);
+            }
+        }
+        return m[b.length][a.length];
+    }
+
+    // FIX #15 — showAllContent no toca display de sections, solo items y menú
+    function showAllContent() {
+        if (list) {
+            list.querySelectorAll(".apk-item").forEach(function (el) {
+                el.style.display = "";
+            });
+        }
+        document.querySelectorAll(".menu-item").forEach(function (el) {
+            el.style.display = "";
+        });
+    }
+
+    function searchInMenu(query) {
+        document.querySelectorAll(".menu-item").forEach(function (item) {
+            var t = (item.textContent || item.innerText || "").toLowerCase();
+            item.style.display = fuzzyMatch(query, t) ? "" : "none";
+        });
+    }
+
+
+    /* ============================================================
+       DOWNLOAD GATE — modal con cuenta atrás
+    ============================================================ */
+    var GATE_SECONDS       = 10;
+    var gateEl             = document.getElementById("download-gate");
+    var panelMain          = document.getElementById("download-gate-panel-main");
+    var panelAdblock       = document.getElementById("download-gate-panel-adblock");
+    var countEl            = document.getElementById("download-count");
+    var progressBar        = document.getElementById("download-progress-bar");
     var mediafireContainer = document.getElementById("download-gate__mediafire");
-    var mediafireBtn = document.getElementById("mediafire-download-btn");
-    var gateBackdrop = gateEl ? gateEl.querySelector(".download-gate__backdrop") : null;
-    var gateTimer = null;
-    var gateActive = false;
-    var pendingGateUrl = null;
+    var mediafireBtn       = document.getElementById("mediafire-download-btn");
+    var gateBackdrop       = gateEl ? gateEl.querySelector(".download-gate__backdrop") : null;
+    var gateTimer          = null;
+    var gateActive         = false;
+    var pendingGateUrl     = null;
+
+    // FIX #16 — asignar onclick al mediafireBtn una sola vez aquí
+    if (mediafireBtn) {
+        mediafireBtn.addEventListener("click", function () {
+            setTimeout(closeDownloadGate, 100);
+        });
+    }
 
     function detectAdblockDom() {
         return new Promise(function (resolve) {
@@ -347,128 +227,82 @@
                 "text-ad textAd text_ad",
                 "ad-zone adleader ad_container",
                 "banner-ad google-auto-placed adholder",
-                "adsbygoogle",
+                "adsbygoogle"
             ];
             var baits = [];
-            for (var i = 0; i < names.length; i++) {
+            names.forEach(function (cls) {
                 var el = document.createElement("div");
-                el.className = names[i];
+                el.className = cls;
                 el.style.cssText = "position:absolute;left:-9999px;width:5px;height:5px;pointer-events:none;";
                 el.textContent = "\u00a0";
                 document.body.appendChild(el);
                 baits.push(el);
-            }
-
-            function check() {
-                var blocked = false;
-                for (var j = 0; j < baits.length; j++) {
-                    var b = baits[j];
-                    var st = window.getComputedStyle(b);
-                    if (st.display === "none" || st.visibility === "hidden" || parseFloat(st.opacity) === 0) {
-                        blocked = true;
-                        break;
-                    }
-                    if (b.offsetHeight === 0 && b.offsetWidth === 0) {
-                        blocked = true;
-                        break;
-                    }
-                }
-                for (var k = 0; k < baits.length; k++) {
-                    var node = baits[k];
-                    if (node.parentNode) node.parentNode.removeChild(node);
-                }
-                resolve(blocked);
-            }
+            });
             requestAnimationFrame(function () {
-                requestAnimationFrame(check);
+                requestAnimationFrame(function () {
+                    var blocked = baits.some(function (b) {
+                        var st = window.getComputedStyle(b);
+                        return st.display === "none" || st.visibility === "hidden" ||
+                               parseFloat(st.opacity) === 0 ||
+                               (b.offsetHeight === 0 && b.offsetWidth === 0);
+                    });
+                    baits.forEach(function (b) { b.parentNode && b.parentNode.removeChild(b); });
+                    resolve(blocked);
+                });
             });
         });
     }
 
     function detectAdblockScript(url, timeoutMs) {
         return new Promise(function (resolve) {
-            var decided = false;
+            var done = false;
             function finish(blocked) {
-                if (decided) return;
-                decided = true;
-                window.clearTimeout(t);
-                if (node.parentNode) node.parentNode.removeChild(node);
+                if (done) return;
+                done = true;
+                clearTimeout(t);
+                node.parentNode && node.parentNode.removeChild(node);
                 resolve(blocked);
             }
             var node = document.createElement("script");
             node.async = true;
-            var t = window.setTimeout(function () {
-                finish(false);
-            }, timeoutMs);
-            node.onload = function () {
-                finish(false);
-            };
-            node.onerror = function () {
-                finish(true);
-            };
+            var t = setTimeout(function () { finish(false); }, timeoutMs);
+            node.onload  = function () { finish(false); };
+            node.onerror = function () { finish(true); };
             node.src = url;
             (document.head || document.documentElement).appendChild(node);
         });
     }
 
     function detectAdblock() {
-        var bust = Date.now();
         return Promise.all([
             detectAdblockDom(),
             detectAdblockScript(
-                "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?legacycraft=" + bust,
+                "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?lc=" + Date.now(),
                 6000
-            ),
-        ]).then(function (results) {
-            for (var i = 0; i < results.length; i++) {
-                if (results[i]) return true;
-            }
-            return false;
-        });
+            )
+        ]).then(function (results) { return results[0] || results[1]; });
     }
 
     function resetGatePanels() {
         pendingGateUrl = null;
-        if (panelMain) panelMain.hidden = false;
-        if (panelAdblock) panelAdblock.hidden = true;
+        if (panelMain)          panelMain.hidden = false;
+        if (panelAdblock)       panelAdblock.hidden = true;
         if (mediafireContainer) mediafireContainer.hidden = true;
-        if (gateEl) gateEl.setAttribute("aria-labelledby", "download-gate-title");
-    }
-
-    function setGateProgress(left) {
-        if (progressBar) {
-            progressBar.style.width = (100 * left) / GATE_SECONDS + "%";
-        }
+        if (gateEl)             gateEl.setAttribute("aria-labelledby", "download-gate-title");
     }
 
     function closeDownloadGate() {
-        if (gateTimer) {
-            window.clearInterval(gateTimer);
-            gateTimer = null;
-        }
+        if (gateTimer) { clearInterval(gateTimer); gateTimer = null; }
         gateActive = false;
         if (gateEl) gateEl.hidden = true;
         document.body.classList.remove("download-gate-open");
         resetGatePanels();
     }
 
-    function openMediafireInNewTab(url) {
-        var f = document.createElement("form");
-        f.setAttribute("method", "get");
-        f.setAttribute("action", url);
-        f.setAttribute("target", "_blank");
-        f.style.cssText = "position:fixed;left:0;top:0;width:1px;height:1px;opacity:0";
-        document.body.appendChild(f);
-        f.submit();
-        if (f.parentNode) {
-            f.parentNode.removeChild(f);
-        }
-    }
-
     function showAdblockGate(url) {
         if (!gateEl) return;
         pendingGateUrl = url;
-        if (panelMain) panelMain.hidden = true;
+        if (panelMain)    panelMain.hidden = true;
         if (panelAdblock) panelAdblock.hidden = false;
         gateEl.setAttribute("aria-labelledby", "download-gate-adblock-title");
         gateEl.hidden = false;
@@ -477,49 +311,37 @@
 
     function openDownloadGate(url) {
         if (gateActive || !gateEl || !countEl) return;
-        if (panelMain) panelMain.hidden = false;
+        if (panelMain)    panelMain.hidden = false;
         if (panelAdblock) panelAdblock.hidden = true;
         gateEl.setAttribute("aria-labelledby", "download-gate-title");
         gateActive = true;
         gateEl.hidden = false;
         document.body.classList.add("download-gate-open");
 
-        // Reiniciar estado: mostrar contador y ocultar botón MediaFire
-        var timerContainer = document.querySelector('.download-gate__timer');
-        if (timerContainer) timerContainer.hidden = false;
+        var timerEl = document.querySelector(".download-gate__timer");
+        if (timerEl)            timerEl.hidden = false;
         if (mediafireContainer) mediafireContainer.hidden = true;
 
         var left = GATE_SECONDS;
         countEl.textContent = String(left);
-        setGateProgress(left);
+        if (progressBar) progressBar.style.width = "100%";
 
-        gateTimer = window.setInterval(function () {
+        gateTimer = setInterval(function () {
             left -= 1;
             if (left <= 0) {
-                window.clearInterval(gateTimer);
+                clearInterval(gateTimer);
                 gateTimer = null;
                 gateActive = false;
-                
-                // Ocultar el contador y mostrar el botón de MediaFire
-                var timerContainer = document.querySelector('.download-gate__timer');
-                if (timerContainer) timerContainer.hidden = true;
+                if (timerEl)            timerEl.hidden = true;
                 if (mediafireContainer) {
                     mediafireContainer.hidden = false;
-                    if (mediafireBtn) {
-                        mediafireBtn.href = url;
-                        
-                        // Agregar event listener aquí, cuando el botón es visible
-                        mediafireBtn.onclick = function(e) {
-                            setTimeout(function() {
-                                closeDownloadGate();
-                            }, 100);
-                        };
-                    }
+                    // FIX #16 — solo actualizar el href, el listener ya está asignado arriba
+                    if (mediafireBtn) mediafireBtn.href = url;
                 }
                 return;
             }
             countEl.textContent = String(left);
-            setGateProgress(left);
+            if (progressBar) progressBar.style.width = (100 * left / GATE_SECONDS) + "%";
         }, 1000);
     }
 
@@ -528,8 +350,6 @@
             if (gateEl && !gateEl.hidden) closeDownloadGate();
         });
     }
-    
-    // También cerrar al hacer clic fuera del contenido del modal
     if (gateEl) {
         gateEl.addEventListener("click", function (e) {
             if (e.target === gateEl || e.target === gateBackdrop) {
@@ -538,51 +358,55 @@
         });
     }
 
-    var retryAdblockBtn = document.getElementById("download-gate-retry-adblock");
-    if (retryAdblockBtn) {
-        retryAdblockBtn.addEventListener("click", function () {
+    // FIX #18 — retry con centinela para android selector
+    var ANDROID_SENTINEL = "__android_selector__";
+
+    var retryBtn = document.getElementById("download-gate-retry-adblock");
+    if (retryBtn) {
+        retryBtn.addEventListener("click", function () {
             if (!pendingGateUrl) return;
             detectAdblock().then(function (blocked) {
                 if (blocked) return;
                 var url = pendingGateUrl;
                 pendingGateUrl = null;
-                openDownloadGate(url);
+                // FIX #18 — si era el 0.15.10, abrir el selector de Android
+                if (url === ANDROID_SENTINEL) {
+                    showAndroidSelector();
+                } else {
+                    openDownloadGate(url);
+                }
             });
         });
     }
 
-    // Variables para el selector de Android
-    var androidSelectorEl = document.getElementById("android-selector");
-    var androidSelectorBackdrop = androidSelectorEl ? androidSelectorEl.querySelector(".download-gate__backdrop") : null;
 
-    // Función para mostrar el selector de Android
+    /* ============================================================
+       ANDROID SELECTOR
+    ============================================================ */
+    var androidSelectorEl       = document.getElementById("android-selector");
+    var androidSelectorBackdrop = androidSelectorEl
+        ? androidSelectorEl.querySelector(".download-gate__backdrop")
+        : null;
+
     function showAndroidSelector() {
-        if (androidSelectorEl) {
-            androidSelectorEl.hidden = false;
-            document.body.classList.add("download-gate-open");
-        }
+        if (!androidSelectorEl) return;
+        androidSelectorEl.hidden = false;
+        document.body.classList.add("download-gate-open");
     }
 
-    // Función para cerrar el selector de Android
     function closeAndroidSelector() {
-        if (androidSelectorEl) {
-            androidSelectorEl.hidden = true;
-            document.body.classList.remove("download-gate-open");
-        }
+        if (!androidSelectorEl) return;
+        androidSelectorEl.hidden = true;
+        document.body.classList.remove("download-gate-open");
     }
 
-    // Event listeners para el selector de Android
     if (androidSelectorBackdrop) {
-        androidSelectorBackdrop.addEventListener("click", function () {
-            closeAndroidSelector();
-        });
+        androidSelectorBackdrop.addEventListener("click", closeAndroidSelector);
     }
-    
-    // También cerrar al hacer clic fuera del contenido del selector de Android
     if (androidSelectorEl) {
         androidSelectorEl.addEventListener("click", function (e) {
             if (e.target === androidSelectorEl || e.target === androidSelectorBackdrop) {
-                if (!androidSelectorEl.hidden) closeAndroidSelector();
+                closeAndroidSelector();
             }
         });
     }
@@ -592,16 +416,9 @@
             e.preventDefault();
             var url = btn.getAttribute("data-url");
             if (!url) return;
-            
-            // Cerrar selector de Android
             closeAndroidSelector();
-            
-            // Abrir el modal de descarga normal con la URL seleccionada
             detectAdblock().then(function (blocked) {
-                if (blocked) {
-                    showAdblockGate(url);
-                    return;
-                }
+                if (blocked) { showAdblockGate(url); return; }
                 openDownloadGate(url);
             });
         });
@@ -610,118 +427,108 @@
     document.querySelectorAll(".btn-download-gate").forEach(function (btn) {
         btn.addEventListener("click", function (e) {
             var version = btn.getAttribute("data-version");
-            
-            // Si es la versión 0.15.10, mostrar selector de Android
+
             if (version === "0.15.10") {
                 e.preventDefault();
                 detectAdblock().then(function (blocked) {
                     if (blocked) {
-                        showAdblockGate("#");
+                        // FIX #18 — usar centinela en lugar de "#"
+                        showAdblockGate(ANDROID_SENTINEL);
                         return;
                     }
                     showAndroidSelector();
                 });
                 return;
             }
-            
-            // Para otras versiones, usar el flujo normal
+
             var url = btn.getAttribute("href");
             if (!url || url === "#") return;
             e.preventDefault();
             detectAdblock().then(function (blocked) {
-                if (blocked) {
-                    showAdblockGate(url);
-                    return;
-                }
+                if (blocked) { showAdblockGate(url); return; }
                 openDownloadGate(url);
             });
         });
     });
+
 })();
 
 
-/* ============================================
-   Contador de visitantes únicos — Supabase
-   ============================================ */
+/* ============================================================
+   CONTADOR DE VISITANTES ÚNICOS — Supabase
+============================================================ */
 (function () {
-    var SUPABASE_URL = 'https://ktfkhevjxkgkcfvltuey.supabase.co';
-    var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt0ZmtoZXZqeGtna2Nmdmx0dWV5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MTkyNTYsImV4cCI6MjA5NjA5NTI1Nn0.-gbuid_5PjIw9szdUCRs7OgL81oougTU7mv3s_S8PJY';
-    var TABLE = 'visitors';
-    var LS_KEY = 'lc_visitor_id';
+    var SUPABASE_URL = "https://ktfkhevjxkgkcfvltuey.supabase.co";
+    var SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt0ZmtoZXZqeGtna2Nmdmx0dWV5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MTkyNTYsImV4cCI6MjA5NjA5NTI1Nn0.-gbuid_5PjIw9szdUCRs7OgL81oougTU7mv3s_S8PJY";
+    var TABLE  = "visitors";
+    var LS_KEY = "lc_visitor_id";
 
-    var countEl = document.getElementById('visitor-count');
+    var countEl = document.getElementById("visitor-count");
     if (!countEl) return;
 
-    /* Obtener o crear un ID único por dispositivo */
     function getVisitorId() {
         var id = localStorage.getItem(LS_KEY);
         if (!id) {
-            id = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+            id = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
                 var r = Math.random() * 16 | 0;
-                return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+                return (c === "x" ? r : (r & 0x3 | 0x8)).toString(16);
             });
             localStorage.setItem(LS_KEY, id);
         }
         return id;
     }
 
-    /* Mostrar el conteo con separador de miles */
-    function formatCount(n) {
-        return n.toLocaleString('es');
-    }
+    var headers = {
+        "apikey": SUPABASE_KEY,
+        "Authorization": "Bearer " + SUPABASE_KEY
+    };
 
-    /* Obtener total de visitantes */
+    // FIX #22 — manejar NaN si content-range devuelve "*"
     function fetchCount() {
-        return fetch(SUPABASE_URL + '/rest/v1/' + TABLE + '?select=id', {
-            headers: {
-                'apikey': SUPABASE_KEY,
-                'Authorization': 'Bearer ' + SUPABASE_KEY,
-                'Prefer': 'count=exact',
-                'Range': '0-0'
-            }
+        return fetch(SUPABASE_URL + "/rest/v1/" + TABLE + "?select=id", {
+            headers: Object.assign({}, headers, {
+                "Prefer": "count=exact",
+                "Range": "0-0"
+            })
         }).then(function (res) {
-            var total = res.headers.get('content-range');
-            if (total) {
-                var parts = total.split('/');
-                return parseInt(parts[1], 10) || 0;
+            var cr = res.headers.get("content-range");
+            if (cr) {
+                var n = parseInt(cr.split("/")[1], 10);
+                return isNaN(n) ? 0 : n;
             }
             return 0;
         });
     }
 
-    /* Registrar visita (solo si es la primera vez en este dispositivo) */
+    // FIX #23 — verificar res.ok en el POST
     function registerVisit(visitorId) {
-        /* Primero comprueba si ya existe este ID */
-        return fetch(SUPABASE_URL + '/rest/v1/' + TABLE + '?id=eq.' + visitorId + '&select=id', {
-            headers: {
-                'apikey': SUPABASE_KEY,
-                'Authorization': 'Bearer ' + SUPABASE_KEY
-            }
-        }).then(function (res) { return res.json(); })
-          .then(function (rows) {
-              if (rows.length > 0) return; /* Ya registrado */
-              return fetch(SUPABASE_URL + '/rest/v1/' + TABLE, {
-                  method: 'POST',
-                  headers: {
-                      'apikey': SUPABASE_KEY,
-                      'Authorization': 'Bearer ' + SUPABASE_KEY,
-                      'Content-Type': 'application/json',
-                      'Prefer': 'return=minimal'
-                  },
-                  body: JSON.stringify({ id: visitorId })
-              });
-          });
+        return fetch(SUPABASE_URL + "/rest/v1/" + TABLE + "?id=eq." + visitorId + "&select=id", {
+            headers: headers
+        })
+        .then(function (res) { return res.json(); })
+        .then(function (rows) {
+            if (rows && rows.length > 0) return; // ya registrado
+            return fetch(SUPABASE_URL + "/rest/v1/" + TABLE, {
+                method: "POST",
+                headers: Object.assign({}, headers, {
+                    "Content-Type": "application/json",
+                    "Prefer": "return=minimal"
+                }),
+                body: JSON.stringify({ id: visitorId })
+            }).then(function (res) {
+                if (!res.ok) throw new Error("POST failed: " + res.status);
+            });
+        });
     }
 
     var visitorId = getVisitorId();
 
-    /* Registrar y luego mostrar el conteo */
     registerVisit(visitorId)
         .then(function () { return fetchCount(); })
         .then(function (count) {
-            countEl.textContent = formatCount(count);
+            countEl.textContent = count.toLocaleString("es");
         })
         .catch(function () {
-            countEl.textContent = '—';
+            countEl.textContent = "—";
         });
 })();

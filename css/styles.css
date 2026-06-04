@@ -37,10 +37,19 @@ html {
 
 body {
     font-family: "Outfit", system-ui, sans-serif;
+    min-height: 100vh;
     min-height: 100dvh;
     color: var(--text);
     overflow-x: hidden;
     background: #020b12;
+}
+
+.page {
+    position: relative;
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
 }
 
 /* ---- Fondo blur (intacto) ---- */
