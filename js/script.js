@@ -55,11 +55,13 @@
     });
 
     window.addEventListener("hashchange", function () {
-        // Solo responder a hashchange si NO fue causado por el click handler
-        // (el click handler ya llamó showSection directamente)
         var id = sectionFromHash();
         showSection(id);
-        window.scrollTo(0, 0);
+        requestAnimationFrame(function () {
+            document.documentElement.style.scrollBehavior = "auto";
+            window.scrollTo(0, 0);
+            document.documentElement.style.scrollBehavior = "";
+        });
     });
 
     if (isReload()) {
@@ -68,7 +70,15 @@
         if (history.replaceState) history.replaceState(null, "", "#inicio");
     }
     showSection(sectionFromHash());
-    window.scrollTo(0, 0);
+
+    /* Forzar scroll al tope después del paint para que no restaure posición anterior en móvil */
+    requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+            document.documentElement.style.scrollBehavior = "auto";
+            window.scrollTo(0, 0);
+            document.documentElement.style.scrollBehavior = "";
+        });
+    });
 
 
     /* ============================================================
