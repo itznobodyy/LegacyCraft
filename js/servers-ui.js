@@ -228,7 +228,7 @@
             "</div>",
 
             /* Descripción */
-            '<p class="srv-desc">' + (server.description || "") + "</p>",
+            '<p class="srv-desc" hidden>' + (server.description || "") + "</p>",
 
             /* MOTD — bloque tipo terminal */
             '<div class="srv-motd-block">',
