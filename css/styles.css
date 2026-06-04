@@ -24,6 +24,10 @@
     --r-md:   12px;
     --r-sm:   8px;
     --r-pill: 999px;
+
+    --font-body:    "Outfit", system-ui, sans-serif;
+    --font-pixel:   "Press Start 2P", monospace;
+    --font-accent:  "Space Grotesk", system-ui, sans-serif;
 }
 
 /* ---- Reset ---- */
@@ -36,7 +40,7 @@ html {
 }
 
 body {
-    font-family: "Outfit", system-ui, sans-serif;
+    font-family: var(--font-body);
     min-height: 100vh;
     min-height: 100dvh;
     color: var(--text);
@@ -50,6 +54,91 @@ body {
     min-height: 100dvh;
     display: flex;
     flex-direction: column;
+}
+
+/* ---- Títulos de sección: Space Grotesk ---- */
+.section-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 22px;
+    letter-spacing: -0.3px;
+    font-family: var(--font-accent);
+}
+
+/* ---- Títulos de cards: Press Start 2P (pixel) ---- */
+.info-card h2 {
+    font-family: var(--font-pixel);
+    font-size: 9px;
+    font-weight: 400;
+    color: var(--text-muted);
+    margin-bottom: 18px;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    line-height: 1.8;
+    position: relative;
+}
+.info-card h2::after {
+    content: '';
+    display: block;
+    width: 28px; height: 2px;
+    background: linear-gradient(90deg, var(--blue), var(--green));
+    border-radius: 1px;
+    margin: 10px auto 0;
+}
+
+/* ---- Nombre de APK: Space Grotesk ---- */
+.apk-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+    font-family: var(--font-accent);
+}
+
+/* ---- section-subtitle (alternativas): Space Grotesk ---- */
+.section-subtitle {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+    margin: 28px 0 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    letter-spacing: -0.2px;
+    font-family: var(--font-accent);
+}
+
+/* ---- Stats / números: Space Grotesk bold ---- */
+.stat-number {
+    display: block;
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--blue);
+    margin-bottom: 4px;
+    font-family: var(--font-accent);
+}
+
+/* ---- Créditos h3: Press Start 2P ---- */
+.credit-card h3 {
+    font-family: var(--font-pixel);
+    font-size: 8px;
+    font-weight: 400;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    text-align: center;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+    line-height: 1.8;
+}
+
+/* ---- Nombre del autor: Space Grotesk ---- */
+.author-name {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--text);
+    margin-bottom: 4px;
+    font-family: var(--font-accent);
 }
 
 /* ---- Fondo blur (intacto) ---- */
@@ -146,9 +235,7 @@ body {
     box-shadow: 0 4px 18px var(--blue-glow);
 }
 
-/* ============================================
-   CONTENT MAIN
-   ============================================ */
+/* ---- Content Main ---- */
 .content-main {
     flex: 1;
     display: flex;
@@ -200,13 +287,6 @@ body {
 }
 .content-section.is-active { display: block; }
 
-.section-title {
-    font-size: 22px;
-    font-weight: 700;
-    color: var(--text);
-    margin-bottom: 22px;
-    letter-spacing: -0.3px;
-}
 
 /* ============================================
    INFO CARDS GRID (sección Inicio)
@@ -384,7 +464,6 @@ body {
     margin-bottom: 12px;
 }
 .apk-info { display: flex; flex-direction: column; gap: 4px; }
-.apk-name { font-size: 16px; font-weight: 700; color: var(--text); }
 .apk-date { font-size: 12px; color: var(--text-dim); }
 
 .btn-download {
@@ -463,12 +542,6 @@ body {
 }
 .credit-card:hover .credit-icon { transform: scale(1.08); box-shadow: 0 6px 28px var(--blue-glow); }
 
-.credit-card h3 {
-    font-size: 11px; font-weight: 700;
-    letter-spacing: 2px; text-transform: uppercase;
-    text-align: center; color: var(--text-muted);
-    margin-bottom: 16px;
-}
 .credit-card p { font-size: 13px; color: var(--text-muted); line-height: 1.6; margin-bottom: 10px; }
 .credit-card a { color: var(--blue); text-decoration: none; }
 .credit-card a:hover { text-decoration: underline; }
@@ -506,7 +579,6 @@ body {
 
 .project-stats { display: flex; justify-content: space-around; padding: 14px 0; background: rgba(255,255,255,0.04); border-radius: var(--r-sm); margin-bottom: 14px; }
 .stat-item { text-align: center; }
-.stat-number { display: block; font-size: 20px; font-weight: 800; color: var(--blue); margin-bottom: 4px; font-family: 'Press Start 2P', monospace; }
 .stat-label  { font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px; }
 .project-description { font-size: 12px; color: var(--text-dim); text-align: center; line-height: 1.6; }
 
