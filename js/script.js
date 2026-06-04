@@ -59,6 +59,7 @@
         // (el click handler ya llamó showSection directamente)
         var id = sectionFromHash();
         showSection(id);
+        window.scrollTo(0, 0);
     });
 
     if (isReload()) {
@@ -67,6 +68,7 @@
         if (history.replaceState) history.replaceState(null, "", "#inicio");
     }
     showSection(sectionFromHash());
+    window.scrollTo(0, 0);
 
 
     /* ============================================================
