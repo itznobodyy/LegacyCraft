@@ -1,0 +1,6 @@
+script.py
+src/
+bin/
+supabase-rls.sql
+supabase-ratings.sql
+*.py
