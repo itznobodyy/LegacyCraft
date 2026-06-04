@@ -169,13 +169,29 @@
             if (typeof data.motd === "string") {
                 motdRaw = data.motd;
             } else if (data.motd.raw && data.motd.raw.length) {
-                motdRaw = Array.isArray(data.motd.raw) ? data.motd.raw.join("\n") : data.motd.raw;
+                // raw es array de líneas — unir con \n para respetar saltos
+                motdRaw = Array.isArray(data.motd.raw)
+                    ? data.motd.raw.join("\n")
+                    : data.motd.raw;
             } else if (data.motd.clean) {
-                motdRaw = Array.isArray(data.motd.clean) ? data.motd.clean.join(" ") : data.motd.clean;
+                motdRaw = Array.isArray(data.motd.clean)
+                    ? data.motd.clean.join("\n")
+                    : data.motd.clean;
             }
         }
-        var motdHtml  = motdRaw ? motdToHtml(motdRaw) : (data && data.hostname ? data.hostname : "—");
+
+        // Construir HTML del MOTD línea por línea
+        var motdLines = motdRaw ? motdRaw.split("\n") : [];
+        var motdBlockHtml = motdLines.length
+            ? motdLines.map(function (line) {
+                return '<div class="srv-motd__line">' + motdToHtml(line) + "</div>";
+              }).join("")
+            : '<div class="srv-motd__line" style="color:rgba(255,255,255,0.35)">Sin MOTD</div>';
+
         var verText   = (data && data.version && data.version !== "—") ? data.version : ("MCPE " + server.version);
+        var proto     = (data && data.debug && data.debug.protocol) ? data.debug.protocol : (data && data.protocol ? data.protocol : "84");
+        var hasQuery  = (data && data.debug && data.debug.query === true);
+        var queryFail = (data && data.debug && typeof data.debug.query_error === "string") ? data.debug.query_error : null;
 
         var card = document.createElement("div");
         card.className = "srv-card";
@@ -210,15 +226,24 @@
             /* Descripción */
             '<p class="srv-desc">' + (server.description || "") + "</p>",
 
-            /* Stats */
+            /* MOTD — bloque tipo terminal */
+            '<div class="srv-motd-block">',
+            motdBlockHtml,
+            "</div>",
+
+            /* Stats en fila */
             '<div class="srv-stats">',
             '  <div class="srv-stat srv-stat--players">',
             '    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>',
-            '    <span class="srv-stat__val">' + online + " / " + max + "</span>",
+            '    <span class="srv-stat__val"><strong>' + online + '</strong> / ' + max + "</span>",
             "  </div>",
-            '  <div class="srv-stat srv-stat--motd">',
-            '    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>',
-            '    <span class="srv-stat__val srv-motd">' + motdHtml + "</span>",
+            '  <div class="srv-stat srv-stat--proto">',
+            '    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4 2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>',
+            '    <span class="srv-stat__val">Proto <strong>' + proto + "</strong></span>",
+            "  </div>",
+            '  <div class="srv-stat ' + (hasQuery ? "srv-stat--query-on" : "srv-stat--query-off") + '">',
+            '    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>',
+            '    <span class="srv-stat__val">Query: <strong>' + (hasQuery ? "Activado" : (queryFail ? "Desactivado" : "No")) + "</strong></span>",
             "  </div>",
             '  <div class="srv-stat srv-stat--version">',
             '    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg>',

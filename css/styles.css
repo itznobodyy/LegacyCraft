@@ -880,7 +880,29 @@ body {
     margin-bottom: 14px;
 }
 
-/* Stats dinámicos */
+/* MOTD — bloque terminal negro */
+.srv-motd-block {
+    background: #0a0a0a;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: var(--r-sm);
+    padding: 10px 14px;
+    margin-bottom: 12px;
+    font-family: "Consolas", "Courier New", monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    min-height: 38px;
+    word-break: break-word;
+}
+.srv-motd__line {
+    display: block;
+    color: #ffffff;
+    min-height: 1.6em;
+}
+.srv-motd__line:empty::after {
+    content: '\00a0'; /* non-breaking space para líneas vacías */
+}
+
+/* Stats */
 .srv-stats {
     display: flex;
     flex-wrap: wrap;
@@ -888,9 +910,9 @@ body {
 }
 .srv-stat {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     gap: 7px;
-    padding: 8px 12px;
+    padding: 7px 11px;
     background: rgba(255,255,255,0.04);
     border: 1px solid rgba(255,255,255,0.07);
     border-radius: var(--r-sm);
@@ -898,12 +920,16 @@ body {
     color: var(--text-dim);
     flex-shrink: 0;
 }
-.srv-stat svg { flex-shrink: 0; margin-top: 1px; opacity: 0.6; }
+.srv-stat svg { flex-shrink: 0; opacity: 0.6; }
 .srv-stat__val { color: var(--text-muted); }
-.srv-stat--players { min-width: 90px; }
-.srv-stat--motd    { flex: 1; min-width: 160px; }
-.srv-stat--version { min-width: 80px; }
-.srv-motd { font-size: 12px; line-height: 1.5; }
+.srv-stat__val strong { color: var(--text); font-weight: 700; }
+.srv-stat--players { min-width: 80px; }
+.srv-stat--proto   { }
+.srv-stat--version { }
+.srv-stat--query-on  { border-color: rgba(34,197,94,0.2); }
+.srv-stat--query-on  .srv-stat__val strong { color: #4ade80; }
+.srv-stat--query-off { border-color: rgba(239,68,68,0.18); }
+.srv-stat--query-off .srv-stat__val strong { color: #f87171; }
 
 /* Ocultar cuando el filtro no coincide */
 .srv-card[hidden] { display: none; }
@@ -1376,9 +1402,9 @@ body.download-gate-open { overflow: hidden; }
     /* Servidores — móvil */
     .srv-card { padding: 16px 14px; border-radius: 16px; }
     .srv-name { font-size: 15px; max-width: 160px; }
-    .srv-stats { flex-direction: column; gap: 6px; }
-    .srv-stat--motd { min-width: unset; }
-    .srv-stat--players, .srv-stat--version { min-width: unset; }
+    .srv-motd-block { font-size: 12px; padding: 8px 11px; }
+    .srv-stats { flex-direction: row; gap: 5px; flex-wrap: wrap; }
+    .srv-stat { padding: 6px 9px; font-size: 11px; }
 
     /* Social icons: pill centrado abajo */
     .social-icons {
