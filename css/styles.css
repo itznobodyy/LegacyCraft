@@ -1530,7 +1530,7 @@ body.download-gate-open { overflow: hidden; }
    SPLASH SCREEN — solo móvil
 ============================================================ */
 #splash-screen {
-    display: none; /* oculto en desktop por defecto */
+    display: none;
 }
 
 @media (max-width: 768px) {
@@ -1543,54 +1543,102 @@ body.download-gate-open { overflow: hidden; }
         align-items: center;
         justify-content: center;
         flex-direction: column;
-        animation: splash-fade-out 0.5s ease-in 1.8s forwards;
+        animation: splash-fade-out 0.6s cubic-bezier(0.4,0,1,1) 2.2s forwards;
+        pointer-events: none;
+        overflow: hidden;
+    }
+
+    /* Fondo con grid pixelado */
+    #splash-screen::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background-image:
+            linear-gradient(rgba(34,211,168,0.04) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(34,211,168,0.04) 1px, transparent 1px);
+        background-size: 32px 32px;
+        animation: splash-grid-in 0.8s ease-out 0.1s both;
+    }
+
+    /* Viñeta radial encima del grid */
+    #splash-screen::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(ellipse 70% 70% at 50% 50%, transparent 30%, #020b12 100%);
         pointer-events: none;
     }
 
     .splash-inner {
+        position: relative;
+        z-index: 1;
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 20px;
-        animation: splash-pop-in 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) 0.15s both;
+        gap: 22px;
+        animation: splash-rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.2s both;
     }
 
     .splash-logo {
-        width: 88px;
-        height: 88px;
-        border-radius: 22px;
-        filter: drop-shadow(0 0 28px rgba(34,211,168,0.55)) drop-shadow(0 0 8px rgba(59,130,246,0.4));
-        animation: splash-glow-pulse 1.2s ease-in-out 0.4s infinite alternate;
+        width: 90px;
+        height: 90px;
+        border-radius: 24px;
+        animation: splash-logo-anim 1.6s ease-in-out 0.3s both;
+        position: relative;
+    }
+
+    /* Anillo de glow que se expande y desvanece */
+    .splash-logo::after {
+        content: '';
+        position: absolute;
+        inset: -12px;
+        border-radius: 36px;
+        border: 2px solid rgba(34,211,168,0.5);
+        animation: splash-ring 1s ease-out 0.6s both;
     }
 
     .splash-name {
         font-family: "Press Start 2P", monospace;
-        font-size: 13px;
+        font-size: 12px;
         color: #fff;
-        letter-spacing: 2px;
-        text-shadow: 0 0 18px rgba(34,211,168,0.6), 0 2px 8px rgba(0,0,0,0.8);
+        letter-spacing: 3px;
+        text-transform: uppercase;
         opacity: 0;
-        animation: splash-text-in 0.4s ease-out 0.6s forwards;
+        animation: splash-text-in 0.5s ease-out 0.75s forwards;
+        text-shadow: 0 0 20px rgba(34,211,168,0.7);
     }
 
-    @keyframes splash-pop-in {
-        from { opacity: 0; transform: scale(0.6); }
+    @keyframes splash-grid-in {
+        from { opacity: 0; transform: scale(1.1); }
         to   { opacity: 1; transform: scale(1); }
     }
 
-    @keyframes splash-glow-pulse {
-        from { filter: drop-shadow(0 0 18px rgba(34,211,168,0.4)) drop-shadow(0 0 6px rgba(59,130,246,0.3)); }
-        to   { filter: drop-shadow(0 0 36px rgba(34,211,168,0.75)) drop-shadow(0 0 14px rgba(59,130,246,0.55)); }
+    @keyframes splash-rise {
+        from { opacity: 0; transform: translateY(20px) scale(0.92); }
+        to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    @keyframes splash-logo-anim {
+        0%   { filter: drop-shadow(0 0 0px rgba(34,211,168,0)); transform: scale(0.8); opacity: 0; }
+        30%  { filter: drop-shadow(0 0 20px rgba(34,211,168,0.8)); transform: scale(1.08); opacity: 1; }
+        60%  { filter: drop-shadow(0 0 30px rgba(34,211,168,0.5)); transform: scale(0.97); }
+        80%  { filter: drop-shadow(0 0 18px rgba(34,211,168,0.6)); transform: scale(1.02); }
+        100% { filter: drop-shadow(0 0 22px rgba(34,211,168,0.45)) drop-shadow(0 0 8px rgba(59,130,246,0.3)); transform: scale(1); }
+    }
+
+    @keyframes splash-ring {
+        from { opacity: 1; transform: scale(0.85); }
+        to   { opacity: 0; transform: scale(1.4); }
     }
 
     @keyframes splash-text-in {
-        from { opacity: 0; transform: translateY(8px); }
-        to   { opacity: 1; transform: translateY(0); }
+        from { opacity: 0; transform: translateY(6px) scale(0.95); letter-spacing: 6px; }
+        to   { opacity: 1; transform: translateY(0) scale(1); letter-spacing: 3px; }
     }
 
     @keyframes splash-fade-out {
-        from { opacity: 1; }
-        to   { opacity: 0; visibility: hidden; }
+        0%   { opacity: 1; transform: scale(1); }
+        100% { opacity: 0; transform: scale(1.04); visibility: hidden; }
     }
 }
 
