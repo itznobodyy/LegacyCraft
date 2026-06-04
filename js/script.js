@@ -332,6 +332,8 @@
         if (panelAdblock) panelAdblock.hidden = false;
         gateEl.setAttribute("aria-labelledby", "download-gate-adblock-title");
         gateEl.hidden = false;
+        var _box1 = gateEl.querySelector(".download-gate__box");
+        if (_box1) { _box1.style.animation = "none"; void _box1.offsetWidth; _box1.style.animation = ""; }
         document.body.classList.add("download-gate-open");
     }
 
@@ -342,6 +344,8 @@
         gateEl.setAttribute("aria-labelledby", "download-gate-title");
         gateActive = true;
         gateEl.hidden = false;
+        var _box2 = gateEl.querySelector(".download-gate__box");
+        if (_box2) { _box2.style.animation = "none"; void _box2.offsetWidth; _box2.style.animation = ""; }
         document.body.classList.add("download-gate-open");
 
         var timerEl = document.querySelector(".download-gate__timer");
@@ -442,6 +446,8 @@
     function showAndroidSelector() {
         if (!androidSelectorEl) return;
         androidSelectorEl.hidden = false;
+        var _box3 = androidSelectorEl.querySelector(".download-gate__box");
+        if (_box3) { _box3.style.animation = "none"; void _box3.offsetWidth; _box3.style.animation = ""; }
         document.body.classList.add("download-gate-open");
     }
 
