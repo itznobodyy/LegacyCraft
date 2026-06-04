@@ -37,5 +37,13 @@ window.SERVERS_LIST = [
         version:     "0.15.10",
         description: "Servidor MCPE legacy con comunidad establecida",
         tags:        ["SMP", "PvP", "Minigames"]
+    },
+    {
+        name:        "AuroraMC",
+        ip:          "auroramc.cowdie.com",
+        port:        12424,
+        version:     "0.15.10",
+        description: "Servidor legacy de Minecraft PE",
+        tags:        ["Survival", "PvP"]
     }
 ];
