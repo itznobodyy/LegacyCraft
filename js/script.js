@@ -18,18 +18,18 @@
         }
     }
 
-    var SECTIONS = ["inicio", "apks", "servidores", "creditos"];
+    var SECTIONS = ["home", "downloads", "servers", "credits"];
 
     function sectionFromUrl() {
-        if (isReload()) return "inicio";
+        if (isReload()) return "home";
         /* Try hash first (legacy), then pathname */
         var h = (window.location.hash || "").replace(/^#/, "");
-        if (h === "aviso") h = "creditos";
+        if (h === "aviso") h = "credits";
         if (SECTIONS.indexOf(h) !== -1) return h;
-        /* Try pathname: /apks -> "apks" */
+        /* Try pathname: /apks -> "downloads" */
         var p = window.location.pathname.replace(/^\//, "").replace(/\/$/, "");
         if (SECTIONS.indexOf(p) !== -1) return p;
-        return "inicio";
+        return "home";
     }
 
     function showSection(id) {
@@ -58,7 +58,7 @@
             // Siempre mostrar la sección directamente sin depender del hash
             showSection(id);
             if (history.pushState) {
-                history.pushState(null, "", id === "inicio" ? "/" : "/" + id);
+                history.pushState(null, "", id === "home" ? "/" : "/" + id);
             }
         });
     });
@@ -121,25 +121,25 @@
             list.querySelectorAll(".apk-item").forEach(function (el) {
                 if (fuzzyMatch(query, getSearchableText(el))) hits++;
             });
-            if (hits) scores.apks = hits;
+            if (hits) scores.downloads = hits;
         }
-        var inicioEl = document.getElementById("inicio");
+        var inicioEl = document.getElementById("home");
         if (inicioEl) {
             var s = fuzzyMatch(query, getSearchableText(inicioEl)) ? 3 : 0;
-            if (/bienven|inicio|descarg|instal/.test(query)) s += 5;
-            if (s) scores.inicio = s;
+            if (/bienven|home|download|instal/.test(query)) s += 5;
+            if (s) scores.home = s;
         }
-        var servidoresEl = document.getElementById("servidores");
+        var servidoresEl = document.getElementById("servers");
         if (servidoresEl) {
             var sv = fuzzyMatch(query, getSearchableText(servidoresEl)) ? 3 : 0;
             if (/serv|server|online|pvp|survival|players/.test(query)) sv += 5;
-            if (sv) scores.servidores = sv;
+            if (sv) scores.servers = sv;
         }
-        var creditosEl = document.getElementById("creditos");
+        var creditosEl = document.getElementById("credits");
         if (creditosEl) {
             var c = fuzzyMatch(query, getSearchableText(creditosEl)) ? 2 : 0;
             if (/credit|autor|github|discord/.test(query)) c += 5;
-            if (c) scores.creditos = c;
+            if (c) scores.credits = c;
         }
         var best = null, max = 0;
         for (var k in scores) {
@@ -156,7 +156,7 @@
 
         showSection(sectionId);
         if (history.pushState) {
-            history.pushState(null, "", sectionId === "inicio" ? "/" : "/" + sectionId);
+            history.pushState(null, "", sectionId === "home" ? "/" : "/" + sectionId);
         }
 
         if (wasFocused && searchInput) {

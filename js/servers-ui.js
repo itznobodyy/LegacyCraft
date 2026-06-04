@@ -449,7 +449,7 @@
 
     /* ── Refrescar cada 60 s si la sección está activa ── */
     setInterval(function () {
-        var sec = document.getElementById("servidores");
+        var sec = document.getElementById("servers");
         if (!sec || !sec.classList.contains("is-active")) return;
         fetchAndRender();
     }, 60000);
