@@ -22,7 +22,7 @@
         if (isReload()) return "inicio";
         var h = (window.location.hash || "#inicio").replace(/^#/, "");
         if (h === "aviso") h = "creditos";
-        if (h === "inicio" || h === "apks" || h === "creditos") return h;
+        if (h === "inicio" || h === "apks" || h === "servidores" || h === "creditos") return h;
         return "inicio";
     }
 
@@ -105,6 +105,12 @@
             var s = fuzzyMatch(query, getSearchableText(inicioEl)) ? 3 : 0;
             if (/bienven|inicio|descarg|instal/.test(query)) s += 5;
             if (s) scores.inicio = s;
+        }
+        var servidoresEl = document.getElementById("servidores");
+        if (servidoresEl) {
+            var sv = fuzzyMatch(query, getSearchableText(servidoresEl)) ? 3 : 0;
+            if (/serv|server|online|pvp|survival|players/.test(query)) sv += 5;
+            if (sv) scores.servidores = sv;
         }
         var creditosEl = document.getElementById("creditos");
         if (creditosEl) {

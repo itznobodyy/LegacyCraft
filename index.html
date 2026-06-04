@@ -39,6 +39,7 @@
                 <ul class="menu-list">
                     <li><a href="#inicio" class="menu-item" data-section="inicio">Inicio</a></li>
                     <li><a href="#apks" class="menu-item" data-section="apks">APKs PE</a></li>
+                    <li><a href="#servidores" class="menu-item" data-section="servidores">Servidores</a></li>
                     <li><a href="#creditos" class="menu-item" data-section="creditos">Créditos</a></li>
                 </ul>
             </nav>
@@ -303,6 +304,17 @@
                         </ul>
                     </section>
 
+                    <section id="servidores" class="content-section" data-view="servidores">
+                        <h1 class="section-title">Servidores</h1>
+                        <p class="srv-intro">Servidores activos de Minecraft PE 0.15.10 y 0.14.3. El estado se actualiza en tiempo real.</p>
+                        <div class="srv-filter-bar">
+                            <button class="srv-filter-btn is-active" data-filter="all">Todos</button>
+                            <button class="srv-filter-btn" data-filter="0.15.10">0.15.10</button>
+                            <button class="srv-filter-btn" data-filter="0.14.3">0.14.3</button>
+                        </div>
+                        <div class="srv-list" id="servers-container"></div>
+                    </section>
+
                     <section id="creditos" class="content-section" data-view="creditos">
                         <h1 class="section-title">Créditos</h1>
                         <p class="credits-intro">LegacyCraft es un proyecto personal para compartir APKs clásicas de Minecraft PE con una interfaz sencilla. Gracias por pasarte por aquí.</p>
@@ -510,6 +522,8 @@
     </div>
 
     <script src="js/script.js"></script>
+    <script src="js/servers.js"></script>
+    <script src="js/servers-ui.js"></script>
 </body>
 </html>
 
