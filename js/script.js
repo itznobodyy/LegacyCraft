@@ -508,3 +508,89 @@
     });
 
 })();
+
+
+/* ============================================================
+   CONTADOR DE VISITANTES ÚNICOS — Supabase (sin IPs)
+============================================================ */
+(function () {
+    var SUPABASE_URL = "https://ktfkhevjxkgkcfvltuey.supabase.co";
+    var SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt0ZmtoZXZqeGtna2Nmdmx0dWV5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MTkyNTYsImV4cCI6MjA5NjA5NTI1Nn0.-gbuid_5PjIw9szdUCRs7OgL81oougTU7mv3s_S8PJY";
+    var TABLE        = "visitors";
+    var LS_KEY       = "lc_visitor_id";
+    var LS_REGISTERED = "lc_registered";
+
+    var countEl = document.getElementById("visitor-count");
+    if (!countEl) return;
+
+    var headers = {
+        "apikey":        SUPABASE_KEY,
+        "Authorization": "Bearer " + SUPABASE_KEY,
+        "Content-Type":  "application/json"
+    };
+
+    function isValidUUID(str) {
+        return /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(str);
+    }
+
+    function getVisitorId() {
+        var id = localStorage.getItem(LS_KEY);
+        if (id && !isValidUUID(id)) { localStorage.removeItem(LS_KEY); id = null; }
+        if (!id) {
+            id = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
+                var r = Math.random() * 16 | 0;
+                return (c === "x" ? r : (r & 0x3 | 0x8)).toString(16);
+            });
+            localStorage.setItem(LS_KEY, id);
+        }
+        return id;
+    }
+
+    function fetchCount() {
+        return fetch(SUPABASE_URL + "/rest/v1/" + TABLE + "?select=id", {
+            headers: Object.assign({}, headers, { "Prefer": "count=exact", "Range": "0-0" })
+        }).then(function (res) {
+            var cr = res.headers.get("content-range");
+            if (cr) {
+                var n = parseInt(cr.split("/")[1], 10);
+                return isNaN(n) ? 0 : n;
+            }
+            return 0;
+        });
+    }
+
+    function registerVisit(visitorId) {
+        if (localStorage.getItem(LS_REGISTERED) === "1") return Promise.resolve();
+        return fetch(SUPABASE_URL + "/rest/v1/" + TABLE + "?id=eq." + visitorId + "&select=id", {
+            headers: headers
+        })
+        .then(function (res) { return res.json(); })
+        .then(function (rows) {
+            if (rows && rows.length > 0) {
+                localStorage.setItem(LS_REGISTERED, "1");
+                return;
+            }
+            return fetch(SUPABASE_URL + "/rest/v1/" + TABLE, {
+                method:  "POST",
+                headers: Object.assign({}, headers, { "Prefer": "return=minimal" }),
+                body:    JSON.stringify({ id: visitorId, visited_at: new Date().toISOString() })
+            }).then(function () {
+                localStorage.setItem(LS_REGISTERED, "1");
+            });
+        });
+    }
+
+    var visitorId = getVisitorId();
+
+    if (localStorage.getItem(LS_REGISTERED) === "1") {
+        fetchCount()
+            .then(function (n) { countEl.textContent = n.toLocaleString("es"); })
+            .catch(function ()  { countEl.textContent = "—"; });
+        return;
+    }
+
+    registerVisit(visitorId)
+        .then(function ()    { return fetchCount(); })
+        .then(function (n)   { countEl.textContent = n.toLocaleString("es"); })
+        .catch(function ()   { countEl.textContent = "—"; });
+})();
