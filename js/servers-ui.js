@@ -1,11 +1,89 @@
 /* ============================================================
    LegacyCraft — Lógica UI de Servidores
-   Consulta la API mcsrvstat.us (Bedrock) y renderiza las cards
+   Funcionalidades:
+   - Ocultar servidores offline
+   - Ordenar por jugadores online (mayor a menor)
+   - Top ranking badges (#1, #2, #3)
+   - Sistema de estrellas con promedio en Supabase
+   - Filtros por versión
+   - Refrescar cada 60s
 ============================================================ */
 (function () {
-    var API_BASE = "https://api.mcsrvstat.us/bedrock/3/";
-    var CACHE_TTL = 60 * 1000; // 1 minuto de caché por servidor
-    var _cache = {};
+    var SUPABASE_URL = "https://ktfkhevjxkgkcfvltuey.supabase.co";
+    var SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt0ZmtoZXZqeGtna2Nmdmx0dWV5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MTkyNTYsImV4cCI6MjA5NjA5NTI1Nn0.-gbuid_5PjIw9szdUCRs7OgL81oougTU7mv3s_S8PJY";
+    var RATINGS_TABLE = "server_ratings";
+    var API_BASE  = "https://api.mcsrvstat.us/bedrock/3/";
+    var CACHE_TTL = 60 * 1000;
+    var _cache    = {};
+
+    /* ── Visitor ID (mismo sistema que script.js) ── */
+    function getVisitorId() {
+        var LS_KEY = "lc_visitor_id";
+        var id = localStorage.getItem(LS_KEY);
+        if (id && !/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(id)) {
+            localStorage.removeItem(LS_KEY);
+            id = null;
+        }
+        if (!id) {
+            id = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
+                var r = Math.random() * 16 | 0;
+                return (c === "x" ? r : (r & 0x3 | 0x8)).toString(16);
+            });
+            localStorage.setItem(LS_KEY, id);
+        }
+        return id;
+    }
+
+    /* ── Supabase headers ── */
+    var _sbHeaders = {
+        "apikey": SUPABASE_KEY,
+        "Authorization": "Bearer " + SUPABASE_KEY,
+        "Content-Type": "application/json"
+    };
+
+    /* ── Clave única por servidor ── */
+    function serverKey(server) {
+        return server.ip.toLowerCase() + ":" + server.port;
+    }
+
+    /* ── Clave para localStorage de rating del usuario ── */
+    function ratingLsKey(server) {
+        return "lc_rating_" + server.ip + "_" + server.port;
+    }
+
+    /* ── Obtener promedio de ratings de Supabase ── */
+    function fetchAvgRating(key) {
+        return fetch(
+            SUPABASE_URL + "/rest/v1/" + RATINGS_TABLE +
+            "?server_key=eq." + encodeURIComponent(key) + "&select=rating",
+            { headers: _sbHeaders }
+        )
+        .then(function (r) { return r.json(); })
+        .then(function (rows) {
+            if (!rows || !rows.length) return null;
+            var sum = rows.reduce(function (acc, row) { return acc + (row.rating || 0); }, 0);
+            return Math.round((sum / rows.length) * 10) / 10;
+        })
+        .catch(function () { return null; });
+    }
+
+    /* ── Guardar o actualizar rating en Supabase ── */
+    function upsertRating(key, rating, visitorId) {
+        return fetch(
+            SUPABASE_URL + "/rest/v1/" + RATINGS_TABLE,
+            {
+                method: "POST",
+                headers: Object.assign({}, _sbHeaders, {
+                    "Prefer": "resolution=merge-duplicates,return=minimal"
+                }),
+                body: JSON.stringify({
+                    server_key: key,
+                    rating:     rating,
+                    visitor_id: visitorId
+                })
+            }
+        ).catch(function () {});
+    }
 
     /* ── Parsear colores § del MOTD a HTML ── */
     function motdToHtml(raw) {
@@ -44,7 +122,7 @@
         return html;
     }
 
-    /* ── Obtener datos del servidor (con caché) ── */
+    /* ── Obtener datos del servidor con caché ── */
     function fetchServer(ip, port) {
         var key = ip + ":" + port;
         var now = Date.now();
@@ -60,95 +138,34 @@
             .catch(function () { return null; });
     }
 
+    /* ── Versión badge ── */
+    function verBadge(version) {
+        var cls = version === "0.14.3" ? "srv-ver--old" :
+                  version === "ambas"  ? "srv-ver--both" : "srv-ver--new";
+        return '<span class="srv-ver ' + cls + '">' + version + "</span>";
+    }
+
+    /* ── Ranking badge ── */
+    function rankBadge(pos) {
+        if (pos === 1) return '<span class="srv-rank srv-rank--1" title="Ranking #1">#1</span>';
+        if (pos === 2) return '<span class="srv-rank srv-rank--2" title="Ranking #2">#2</span>';
+        if (pos === 3) return '<span class="srv-rank srv-rank--3" title="Ranking #3">#3</span>';
+        return '<span class="srv-rank srv-rank--n">#' + pos + "</span>";
+    }
+
     /* ── Crear card HTML ── */
-    function createCard(server) {
-        var card = document.createElement("div");
-        card.className = "srv-card";
-        card.setAttribute("data-key", server.ip + ":" + server.port);
-
-        var versionClass = server.version === "0.14.3" ? "srv-ver--old" :
-                           server.version === "ambas"   ? "srv-ver--both" : "srv-ver--new";
-
+    function createCard(server, rank, data) {
+        var key     = serverKey(server);
+        var idKey   = server.ip.replace(/\./g, "-").replace(/:/g, "-") + "-" + server.port;
         var tagsHtml = (server.tags || []).map(function (t) {
             return '<span class="srv-tag">' + t + "</span>";
         }).join("");
 
-        card.innerHTML = [
-            '<div class="srv-card__header">',
-            '  <div class="srv-card__info">',
-            '    <div class="srv-card__top">',
-            '      <span class="srv-name">' + (server.name || server.ip) + "</span>",
-            '      <span class="srv-status srv-status--loading" id="status-' + server.ip.replace(/\./g, "-") + "-" + server.port + '">',
-            '        <span class="srv-status__dot"></span><span class="srv-status__text">Cargando</span>',
-            "      </span>",
-            "    </div>",
-            '    <span class="srv-addr">',
-            '      <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>',
-            '      <span class="srv-addr__text">' + server.ip + ":" + server.port + "</span>",
-            '      <button class="srv-copy" title="Copiar IP" data-copy="' + server.ip + ":" + server.port + '">',
-            '        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>',
-            "      </button>",
-            "    </span>",
-            '    <div class="srv-tags">' + tagsHtml + "</div>",
-            "  </div>",
-            '  <div class="srv-card__meta">',
-            '    <span class="srv-ver ' + versionClass + '">' + server.version + "</span>",
-            "  </div>",
-            "</div>",
+        var online  = data && data.players && data.players.online != null ? data.players.online : 0;
+        var max     = data && data.players && data.players.max    != null ? data.players.max    : "?";
 
-            // Descripción estática
-            '<p class="srv-desc">' + (server.description || "") + "</p>",
-
-            // Stats dinámicos (se rellenan al obtener datos)
-            '<div class="srv-stats" id="stats-' + server.ip.replace(/\./g, "-") + "-" + server.port + '">',
-            '  <div class="srv-stat srv-stat--players">',
-            '    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>',
-            '    <span class="srv-stat__val" id="players-' + server.ip.replace(/\./g, "-") + "-" + server.port + '">— / —</span>',
-            "  </div>",
-            '  <div class="srv-stat srv-stat--motd">',
-            '    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>',
-            '    <span class="srv-stat__val srv-motd" id="motd-' + server.ip.replace(/\./g, "-") + "-" + server.port + '">Consultando...</span>',
-            "  </div>",
-            '  <div class="srv-stat srv-stat--version">',
-            '    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M9.4 16.6 4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0 4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/></svg>',
-            '    <span class="srv-stat__val" id="version-' + server.ip.replace(/\./g, "-") + "-" + server.port + '">—</span>',
-            "  </div>",
-            "</div>"
-        ].join("\n");
-
-        return card;
-    }
-
-    /* ── Actualizar card con datos de la API ── */
-    function updateCard(server, data) {
-        var key = server.ip.replace(/\./g, "-") + "-" + server.port;
-        var statusEl  = document.getElementById("status-"  + key);
-        var playersEl = document.getElementById("players-" + key);
-        var motdEl    = document.getElementById("motd-"    + key);
-        var versionEl = document.getElementById("version-" + key);
-
-        if (!statusEl) return;
-
-        if (!data || !data.online) {
-            statusEl.className = "srv-status srv-status--offline";
-            statusEl.innerHTML = '<span class="srv-status__dot"></span><span class="srv-status__text">Offline</span>';
-            if (playersEl) playersEl.textContent = "0 / —";
-            if (motdEl)    motdEl.textContent    = "Servidor offline";
-            if (versionEl) versionEl.textContent  = "—";
-            return;
-        }
-
-        // Online
-        statusEl.className = "srv-status srv-status--online";
-        statusEl.innerHTML = '<span class="srv-status__dot"></span><span class="srv-status__text">Online</span>';
-
-        var online = (data.players && data.players.online != null) ? data.players.online : 0;
-        var max    = (data.players && data.players.max    != null) ? data.players.max    : "?";
-        if (playersEl) playersEl.textContent = online + " / " + max;
-
-        // MOTD — puede venir como string o como objeto {raw, clean, html}
         var motdRaw = "";
-        if (data.motd) {
+        if (data && data.motd) {
             if (typeof data.motd === "string") {
                 motdRaw = data.motd;
             } else if (data.motd.raw && data.motd.raw.length) {
@@ -157,36 +174,182 @@
                 motdRaw = Array.isArray(data.motd.clean) ? data.motd.clean.join(" ") : data.motd.clean;
             }
         }
-        if (motdEl) {
-            motdEl.innerHTML = motdRaw ? motdToHtml(motdRaw) : (data.hostname || "—");
-        }
+        var motdHtml  = motdRaw ? motdToHtml(motdRaw) : (data && data.hostname ? data.hostname : "—");
+        var verText   = data && data.version ? data.version : "—";
 
-        var ver = (data.version || "—");
-        if (versionEl) versionEl.textContent = ver;
+        var card = document.createElement("div");
+        card.className = "srv-card";
+        card.setAttribute("data-key", key);
+        card.setAttribute("data-version", server.version);
+
+        card.innerHTML = [
+            /* Header */
+            '<div class="srv-card__header">',
+            '  <div class="srv-card__info">',
+            '    <div class="srv-card__top">',
+            '      ' + rankBadge(rank),
+            '      <span class="srv-name">' + (server.name || server.ip) + "</span>",
+            '      <span class="srv-status srv-status--online">',
+            '        <span class="srv-status__dot"></span><span class="srv-status__text">Online</span>',
+            "      </span>",
+            '      ' + verBadge(server.version),
+            "    </div>",
+            /* IP + copy */
+            '    <span class="srv-addr">',
+            '      <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>',
+            '      <span class="srv-addr__text">' + server.ip + ":" + server.port + "</span>",
+            '      <button class="srv-copy" title="Copiar IP" data-copy="' + server.ip + ":" + server.port + '">',
+            '        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>',
+            "      </button>",
+            "    </span>",
+            /* Tags */
+            '    <div class="srv-tags">' + tagsHtml + "</div>",
+            "  </div>",
+            "</div>",
+
+            /* Descripción */
+            '<p class="srv-desc">' + (server.description || "") + "</p>",
+
+            /* Stats */
+            '<div class="srv-stats">',
+            '  <div class="srv-stat srv-stat--players">',
+            '    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>',
+            '    <span class="srv-stat__val">' + online + " / " + max + "</span>",
+            "  </div>",
+            '  <div class="srv-stat srv-stat--motd">',
+            '    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>',
+            '    <span class="srv-stat__val srv-motd">' + motdHtml + "</span>",
+            "  </div>",
+            '  <div class="srv-stat srv-stat--version">',
+            '    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M9.4 16.6 4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0 4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/></svg>',
+            '    <span class="srv-stat__val">' + verText + "</span>",
+            "  </div>",
+            "</div>",
+
+            /* Sistema de estrellas */
+            '<div class="srv-stars" data-server-key="' + key + '">',
+            '  <div class="srv-stars__icons" id="stars-' + idKey + '">',
+            '    <button class="srv-star" data-star="1" aria-label="1 estrella">★</button>',
+            '    <button class="srv-star" data-star="2" aria-label="2 estrellas">★</button>',
+            '    <button class="srv-star" data-star="3" aria-label="3 estrellas">★</button>',
+            '    <button class="srv-star" data-star="4" aria-label="4 estrellas">★</button>',
+            '    <button class="srv-star" data-star="5" aria-label="5 estrellas">★</button>',
+            "  </div>",
+            '  <span class="srv-stars__avg" id="avg-' + idKey + '">Cargando…</span>',
+            "</div>"
+        ].join("\n");
+
+        return card;
     }
 
-    /* ── Cargar y renderizar todos los servidores ── */
-    function renderServers() {
-        var container = document.getElementById("servers-container");
-        if (!container) return;
+    /* ── Aplicar rating guardado del usuario en una card ── */
+    function restoreUserRating(card, server) {
+        var saved = parseInt(localStorage.getItem(ratingLsKey(server)) || "0", 10);
+        if (!saved) return;
+        var idKey = server.ip.replace(/\./g, "-").replace(/:/g, "-") + "-" + server.port;
+        var starsEl = document.getElementById("stars-" + idKey);
+        if (!starsEl) return;
+        starsEl.querySelectorAll(".srv-star").forEach(function (btn) {
+            var n = parseInt(btn.getAttribute("data-star"), 10);
+            btn.classList.toggle("is-active", n <= saved);
+        });
+    }
 
-        var servers = window.SERVERS_LIST || [];
-        if (servers.length === 0) {
-            container.innerHTML = '<p class="srv-empty">No hay servidores configurados.</p>';
-            return;
-        }
+    /* ── Cargar promedio de Supabase y mostrarlo ── */
+    function loadAvgRating(server) {
+        var key   = serverKey(server);
+        var idKey = server.ip.replace(/\./g, "-").replace(/:/g, "-") + "-" + server.port;
+        var avgEl = document.getElementById("avg-" + idKey);
+        if (!avgEl) return;
+        fetchAvgRating(key).then(function (avg) {
+            if (avg === null) {
+                avgEl.textContent = "—";
+            } else {
+                avgEl.textContent = "★ " + avg.toFixed(1);
+            }
+        });
+    }
 
-        container.innerHTML = "";
-        servers.forEach(function (server) {
-            var card = createCard(server);
-            container.appendChild(card);
+    /* ── Adjuntar listeners de estrellas a una card ── */
+    function attachStarListeners(card, server) {
+        var key       = serverKey(server);
+        var idKey     = server.ip.replace(/\./g, "-").replace(/:/g, "-") + "-" + server.port;
+        var starsEl   = document.getElementById("stars-" + idKey);
+        if (!starsEl) return;
 
-            fetchServer(server.ip, server.port).then(function (data) {
-                updateCard(server, data);
+        var visitorId = getVisitorId();
+
+        starsEl.addEventListener("mouseover", function (e) {
+            var btn = e.target.closest(".srv-star");
+            if (!btn) return;
+            var hoverVal = parseInt(btn.getAttribute("data-star"), 10);
+            starsEl.querySelectorAll(".srv-star").forEach(function (s) {
+                var n = parseInt(s.getAttribute("data-star"), 10);
+                s.classList.toggle("is-hover", n <= hoverVal);
             });
         });
 
-        // Copiar IP al portapapeles
+        starsEl.addEventListener("mouseleave", function () {
+            starsEl.querySelectorAll(".srv-star").forEach(function (s) {
+                s.classList.remove("is-hover");
+            });
+        });
+
+        starsEl.addEventListener("click", function (e) {
+            var btn = e.target.closest(".srv-star");
+            if (!btn) return;
+            var rating = parseInt(btn.getAttribute("data-star"), 10);
+
+            /* Guardar en localStorage */
+            localStorage.setItem(ratingLsKey(server), String(rating));
+
+            /* Actualizar UI */
+            starsEl.querySelectorAll(".srv-star").forEach(function (s) {
+                var n = parseInt(s.getAttribute("data-star"), 10);
+                s.classList.toggle("is-active", n <= rating);
+            });
+
+            /* Upsert en Supabase y recargar promedio */
+            upsertRating(key, rating, visitorId).then(function () {
+                loadAvgRating(server);
+            });
+        });
+    }
+
+    /* ── Estado del filtro activo ── */
+    var _activeFilter = "all";
+
+    /* ── Aplicar filtro de versión a las cards ya en el DOM ── */
+    function applyVersionFilter() {
+        var container = document.getElementById("servers-container");
+        if (!container) return;
+        container.querySelectorAll(".srv-card").forEach(function (card) {
+            var v = card.getAttribute("data-version") || "";
+            card.hidden = (_activeFilter !== "all" && v !== _activeFilter && v !== "ambas");
+        });
+    }
+
+    /* ── Renderizar todos los servidores online ordenados ── */
+    function renderServers(onlineList) {
+        var container = document.getElementById("servers-container");
+        if (!container) return;
+
+        container.innerHTML = "";
+
+        if (onlineList.length === 0) {
+            container.innerHTML = '<p class="srv-empty">No hay servidores online en este momento.</p>';
+            return;
+        }
+
+        onlineList.forEach(function (item, idx) {
+            var card = createCard(item.server, idx + 1, item.data);
+            container.appendChild(card);
+            restoreUserRating(card, item.server);
+            loadAvgRating(item.server);
+            attachStarListeners(card, item.server);
+        });
+
+        /* Copiar IP al portapapeles */
         container.addEventListener("click", function (e) {
             var btn = e.target.closest(".srv-copy");
             if (!btn) return;
@@ -199,33 +362,68 @@
                 }, 2000);
             }).catch(function () {});
         });
+
+        applyVersionFilter();
     }
 
-    // Lanzar al cargar
+    /* ── Fetch todos los servidores, filtrar offline, ordenar y renderizar ── */
+    function fetchAndRender() {
+        var servers = window.SERVERS_LIST || [];
+        if (servers.length === 0) {
+            var c = document.getElementById("servers-container");
+            if (c) c.innerHTML = '<p class="srv-empty">No hay servidores configurados.</p>';
+            return;
+        }
+
+        /* Forzar invalidación de caché en cada ciclo de refresco */
+        servers.forEach(function (server) {
+            var k = server.ip + ":" + server.port;
+            delete _cache[k];
+        });
+
+        var promises = servers.map(function (server) {
+            return fetchServer(server.ip, server.port).then(function (data) {
+                return { server: server, data: data };
+            });
+        });
+
+        Promise.all(promises).then(function (results) {
+            /* Filtrar offline */
+            var online = results.filter(function (item) {
+                return item.data && item.data.online;
+            });
+
+            /* Ordenar por jugadores online descendente */
+            online.sort(function (a, b) {
+                var aPlayers = a.data.players && a.data.players.online != null ? a.data.players.online : 0;
+                var bPlayers = b.data.players && b.data.players.online != null ? b.data.players.online : 0;
+                return bPlayers - aPlayers;
+            });
+
+            renderServers(online);
+        });
+    }
+
+    /* ── Inicializar ── */
+    function init() {
+        fetchAndRender();
+        initFilters();
+    }
+
     if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", renderServers);
+        document.addEventListener("DOMContentLoaded", init);
     } else {
-        renderServers();
+        init();
     }
 
-    // Refrescar cada 60s si la sección está activa
+    /* ── Refrescar cada 60 s si la sección está activa ── */
     setInterval(function () {
         var sec = document.getElementById("servidores");
         if (!sec || !sec.classList.contains("is-active")) return;
-        var servers = window.SERVERS_LIST || [];
-        servers.forEach(function (server) {
-            // Forzar re-fetch borrando caché
-            var key = server.ip + ":" + server.port;
-            delete _cache[key];
-            fetchServer(server.ip, server.port).then(function (data) {
-                updateCard(server, data);
-            });
-        });
+        fetchAndRender();
     }, 60000);
-})();
 
-/* ── Filtros por versión ── */
-(function () {
+    /* ── Filtros por versión ── */
     function initFilters() {
         var bar = document.querySelector(".srv-filter-bar");
         if (!bar) return;
@@ -236,22 +434,8 @@
                 b.classList.remove("is-active");
             });
             btn.classList.add("is-active");
-            var filter = btn.getAttribute("data-filter");
-            document.querySelectorAll(".srv-card").forEach(function (card) {
-                var key = card.getAttribute("data-key") || "";
-                // Buscar el servidor por ip:port
-                var servers = window.SERVERS_LIST || [];
-                var match = servers.find(function (s) {
-                    return (s.ip + ":" + s.port) === key;
-                });
-                if (!match) { card.hidden = false; return; }
-                card.hidden = (filter !== "all" && match.version !== filter && match.version !== "ambas");
-            });
+            _activeFilter = btn.getAttribute("data-filter") || "all";
+            applyVersionFilter();
         });
-    }
-    if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", initFilters);
-    } else {
-        initFilters();
     }
 })();
