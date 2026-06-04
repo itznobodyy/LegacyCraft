@@ -1525,3 +1525,71 @@ body.download-gate-open { overflow: hidden; }
     .download-gate__timer-num { font-size: clamp(2.6rem,14vw,3.25rem); }
     .btn-discord-modal { width: 100%; min-height: 48px; }
 }
+
+/* ============================================================
+   SPLASH SCREEN — solo móvil
+============================================================ */
+#splash-screen {
+    display: none; /* oculto en desktop por defecto */
+}
+
+@media (max-width: 768px) {
+    #splash-screen {
+        display: flex;
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        background: #020b12;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        animation: splash-fade-out 0.5s ease-in 1.8s forwards;
+        pointer-events: none;
+    }
+
+    .splash-inner {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+        animation: splash-pop-in 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) 0.15s both;
+    }
+
+    .splash-logo {
+        width: 88px;
+        height: 88px;
+        border-radius: 22px;
+        filter: drop-shadow(0 0 28px rgba(34,211,168,0.55)) drop-shadow(0 0 8px rgba(59,130,246,0.4));
+        animation: splash-glow-pulse 1.2s ease-in-out 0.4s infinite alternate;
+    }
+
+    .splash-name {
+        font-family: "Press Start 2P", monospace;
+        font-size: 13px;
+        color: #fff;
+        letter-spacing: 2px;
+        text-shadow: 0 0 18px rgba(34,211,168,0.6), 0 2px 8px rgba(0,0,0,0.8);
+        opacity: 0;
+        animation: splash-text-in 0.4s ease-out 0.6s forwards;
+    }
+
+    @keyframes splash-pop-in {
+        from { opacity: 0; transform: scale(0.6); }
+        to   { opacity: 1; transform: scale(1); }
+    }
+
+    @keyframes splash-glow-pulse {
+        from { filter: drop-shadow(0 0 18px rgba(34,211,168,0.4)) drop-shadow(0 0 6px rgba(59,130,246,0.3)); }
+        to   { filter: drop-shadow(0 0 36px rgba(34,211,168,0.75)) drop-shadow(0 0 14px rgba(59,130,246,0.55)); }
+    }
+
+    @keyframes splash-text-in {
+        from { opacity: 0; transform: translateY(8px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes splash-fade-out {
+        from { opacity: 1; }
+        to   { opacity: 0; visibility: hidden; }
+    }
+}
