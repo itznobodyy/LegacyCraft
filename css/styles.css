@@ -1285,7 +1285,7 @@ body.download-gate-open { overflow: hidden; }
         top: auto; left: auto;
         display: flex;
         justify-content: center;
-        padding: 28px 0 6px;
+        padding: 10px 0 6px;
     }
     .logo-img { height: 44px; }
 
