@@ -587,3 +587,48 @@
         .then(function (n) { countEl.textContent = n.toLocaleString("es"); })
         .catch(function () { countEl.textContent = "—"; });
 })();
+
+/* ============================================================
+   SKILLS — animación de barras al entrar en viewport
+============================================================ */
+(function () {
+    function animateBars(section) {
+        section.querySelectorAll(".skill-bar-fill").forEach(function (bar) {
+            bar.classList.add("is-visible");
+        });
+    }
+
+    function resetBars(section) {
+        section.querySelectorAll(".skill-bar-fill").forEach(function (bar) {
+            bar.classList.remove("is-visible");
+        });
+    }
+
+    var creditsSection = document.getElementById("credits");
+    if (!creditsSection) return;
+
+    /* Observar la sección de créditos: anima al entrar, resetea al salir */
+    if ("IntersectionObserver" in window) {
+        var obs = new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) {
+                if (entry.isIntersecting) {
+                    /* Pequeño delay para que la transición se vea suave */
+                    setTimeout(function () { animateBars(creditsSection); }, 120);
+                } else {
+                    resetBars(creditsSection);
+                }
+            });
+        }, { threshold: 0.05 });
+        obs.observe(creditsSection);
+    } else {
+        /* Fallback: animar directamente sin observer */
+        animateBars(creditsSection);
+    }
+
+    /* También disparar cuando el usuario navega a Créditos via menú */
+    document.querySelectorAll("[data-section='credits']").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+            setTimeout(function () { animateBars(creditsSection); }, 200);
+        });
+    });
+})();
