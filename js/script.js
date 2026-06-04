@@ -373,12 +373,37 @@
     if (retryBtn) {
         retryBtn.addEventListener("click", function () {
             if (!pendingGateUrl) return;
+            var origText = retryBtn.textContent;
+            retryBtn.disabled = true;
+            retryBtn.textContent = "Comprobando...";
             detectAdblock().then(function (blocked) {
-                if (blocked) return;
+                retryBtn.disabled = false;
+                if (blocked) {
+                    retryBtn.textContent = "Sigue activo, intenta de nuevo";
+                    setTimeout(function () { retryBtn.textContent = origText; }, 2500);
+                    return;
+                }
+                retryBtn.textContent = origText;
                 var url = pendingGateUrl;
                 pendingGateUrl = null;
-                // FIX #18 â€” si era el 0.15.10, abrir el selector de Android
                 if (url === ANDROID_SENTINEL) {
+                    if (gateEl) gateEl.hidden = true;
+                    document.body.classList.remove("download-gate-open");
+                    resetGatePanels();
+                    showAndroidSelector();
+                } else {
+                    openDownloadGate(url);
+                }
+            }).catch(function () {
+                retryBtn.disabled = false;
+                retryBtn.textContent = origText;
+                var url = pendingGateUrl;
+                if (!url) return;
+                pendingGateUrl = null;
+                if (url === ANDROID_SENTINEL) {
+                    if (gateEl) gateEl.hidden = true;
+                    document.body.classList.remove("download-gate-open");
+                    resetGatePanels();
                     showAndroidSelector();
                 } else {
                     openDownloadGate(url);
