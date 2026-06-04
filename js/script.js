@@ -43,16 +43,22 @@
             e.preventDefault();
             var id = el.getAttribute("data-section");
             if (!id) return;
-            if (window.location.hash !== "#" + id) {
-                window.location.hash = id;
+            // Siempre mostrar la sección directamente sin depender del hash
+            showSection(id);
+            if (history.replaceState) {
+                history.replaceState(null, "", "#" + id);
             } else {
-                showSection(id);
+                // fallback silencioso — no cambiar hash para evitar hashchange
+                window.location.hash = id;
             }
         });
     });
 
     window.addEventListener("hashchange", function () {
-        showSection(sectionFromHash());
+        // Solo responder a hashchange si NO fue causado por el click handler
+        // (el click handler ya llamó showSection directamente)
+        var id = sectionFromHash();
+        showSection(id);
     });
 
     if (isReload()) {
@@ -131,14 +137,10 @@
         var wasFocused = searchInput && document.activeElement === searchInput;
         var searchValue = searchInput ? searchInput.value : "";
 
-        if (window.location.hash !== "#" + sectionId) {
-            window.location.hash = sectionId;
-        } else {
-            showSection(sectionId);
+        showSection(sectionId);
+        if (history.replaceState) {
+            history.replaceState(null, "", "#" + sectionId);
         }
-        navLinks.forEach(function (a) {
-            a.classList.toggle("is-active", a.getAttribute("data-section") === sectionId);
-        });
 
         if (wasFocused && searchInput) {
             setTimeout(function () {

@@ -1222,20 +1222,20 @@ body.download-gate-open { overflow: hidden; }
         -webkit-backdrop-filter: blur(28px);
         border: 1px solid rgba(255,255,255,0.1);
         border-radius: 16px;
-        padding: 5px;
+        padding: 4px;
         box-shadow: 0 4px 24px rgba(0,0,0,0.45);
     }
     .menu-list {
         flex-direction: row;
-        gap: 4px;
+        gap: 3px;
     }
-    .menu-list li { flex: 1; }
+    .menu-list li { flex: 1; min-width: 0; }
     .menu-item {
         display: flex;
         align-items: center;
         justify-content: center;
-        padding: 12px 6px;
-        font-size: 13px;
+        padding: 10px 2px;
+        font-size: 11px;
         font-weight: 600;
         text-align: center;
         white-space: nowrap;
@@ -1244,6 +1244,8 @@ body.download-gate-open { overflow: hidden; }
         transform: none !important;
         box-shadow: none !important;
         transition: background 0.2s, color 0.2s;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
     .menu-item.is-active {
         background: linear-gradient(135deg, var(--blue), var(--blue-dark));

@@ -175,7 +175,7 @@
             }
         }
         var motdHtml  = motdRaw ? motdToHtml(motdRaw) : (data && data.hostname ? data.hostname : "—");
-        var verText   = data && data.version ? data.version : "—";
+        var verText   = (data && data.version && data.version !== "—") ? data.version : ("MCPE " + server.version);
 
         var card = document.createElement("div");
         card.className = "srv-card";
@@ -221,7 +221,7 @@
             '    <span class="srv-stat__val srv-motd">' + motdHtml + "</span>",
             "  </div>",
             '  <div class="srv-stat srv-stat--version">',
-            '    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M9.4 16.6 4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0 4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/></svg>',
+            '    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg>',
             '    <span class="srv-stat__val">' + verText + "</span>",
             "  </div>",
             "</div>",
