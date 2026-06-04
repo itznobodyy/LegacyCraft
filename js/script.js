@@ -638,3 +638,90 @@
         });
     });
 })();
+
+
+/* ============================================
+   Contador de visitantes únicos — Supabase
+   ============================================ */
+(function () {
+    var SUPABASE_URL = 'https://ktfkhevjxkgkcfvltuey.supabase.co';
+    var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt0ZmtoZXZqeGtna2Nmdmx0dWV5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MTkyNTYsImV4cCI6MjA5NjA5NTI1Nn0.-gbuid_5PjIw9szdUCRs7OgL81oougTU7mv3s_S8PJY';
+    var TABLE = 'visitors';
+    var LS_KEY = 'lc_visitor_id';
+
+    var countEl = document.getElementById('visitor-count');
+    if (!countEl) return;
+
+    /* Obtener o crear un ID único por dispositivo */
+    function getVisitorId() {
+        var id = localStorage.getItem(LS_KEY);
+        if (!id) {
+            id = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+                var r = Math.random() * 16 | 0;
+                return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+            });
+            localStorage.setItem(LS_KEY, id);
+        }
+        return id;
+    }
+
+    /* Mostrar el conteo con separador de miles */
+    function formatCount(n) {
+        return n.toLocaleString('es');
+    }
+
+    /* Obtener total de visitantes */
+    function fetchCount() {
+        return fetch(SUPABASE_URL + '/rest/v1/' + TABLE + '?select=id', {
+            headers: {
+                'apikey': SUPABASE_KEY,
+                'Authorization': 'Bearer ' + SUPABASE_KEY,
+                'Prefer': 'count=exact',
+                'Range': '0-0'
+            }
+        }).then(function (res) {
+            var total = res.headers.get('content-range');
+            if (total) {
+                var parts = total.split('/');
+                return parseInt(parts[1], 10) || 0;
+            }
+            return 0;
+        });
+    }
+
+    /* Registrar visita (solo si es la primera vez en este dispositivo) */
+    function registerVisit(visitorId) {
+        /* Primero comprueba si ya existe este ID */
+        return fetch(SUPABASE_URL + '/rest/v1/' + TABLE + '?id=eq.' + visitorId + '&select=id', {
+            headers: {
+                'apikey': SUPABASE_KEY,
+                'Authorization': 'Bearer ' + SUPABASE_KEY
+            }
+        }).then(function (res) { return res.json(); })
+          .then(function (rows) {
+              if (rows.length > 0) return; /* Ya registrado */
+              return fetch(SUPABASE_URL + '/rest/v1/' + TABLE, {
+                  method: 'POST',
+                  headers: {
+                      'apikey': SUPABASE_KEY,
+                      'Authorization': 'Bearer ' + SUPABASE_KEY,
+                      'Content-Type': 'application/json',
+                      'Prefer': 'return=minimal'
+                  },
+                  body: JSON.stringify({ id: visitorId })
+              });
+          });
+    }
+
+    var visitorId = getVisitorId();
+
+    /* Registrar y luego mostrar el conteo */
+    registerVisit(visitorId)
+        .then(function () { return fetchCount(); })
+        .then(function (count) {
+            countEl.textContent = formatCount(count);
+        })
+        .catch(function () {
+            countEl.textContent = '—';
+        });
+})();

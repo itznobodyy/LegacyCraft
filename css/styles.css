@@ -514,6 +514,30 @@ body {
 .footer-info p  { font-size: 11px; color: var(--text-dim); line-height: 1.6; margin-top: 4px; }
 
 /* ============================================
+   VISITOR COUNTER
+   ============================================ */
+.visitor-counter {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 14px;
+    background: var(--bg-card);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--border);
+    border-radius: var(--r-pill);
+    color: var(--text-muted);
+    font-size: 13px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: default;
+    user-select: none;
+    white-space: nowrap;
+}
+.visitor-counter svg { flex-shrink: 0; opacity: 0.7; }
+#visitor-count { color: var(--text); }
+
+/* ============================================
    SOCIAL ICONS (desktop — fijo abajo-izq)
    ============================================ */
 .social-icons {
@@ -999,6 +1023,12 @@ body.download-gate-open { overflow: hidden; }
         padding: 8px 18px;
         gap: 6px;
         box-shadow: 0 4px 28px rgba(0,0,0,0.55);
+    }
+    .visitor-counter {
+        background: transparent;
+        border: none;
+        padding: 6px 4px;
+        font-size: 12px;
     }
     .social-icon {
         background: transparent;
