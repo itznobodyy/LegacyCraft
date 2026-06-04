@@ -242,7 +242,7 @@
             "  </div>",
             '  <div class="srv-stat srv-stat--proto">',
             '    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4 2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>',
-            '    <span class="srv-stat__val">Proto <strong>' + proto + "</strong></span>",
+            '    <span class="srv-stat__val">Protocolo: <strong>' + proto + "</strong></span>",
             "  </div>",
             '  <div class="srv-stat ' + (hasQuery ? "srv-stat--query-on" : "srv-stat--query-off") + '">',
             '    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>',
