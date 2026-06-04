@@ -161,8 +161,9 @@
             return '<span class="srv-tag">' + t + "</span>";
         }).join("");
 
-        var online  = data && data.players && data.players.online != null ? data.players.online : 0;
-        var max     = data && data.players && data.players.max    != null ? data.players.max    : "?";
+        var isOnline  = data && data.online === true;
+        var online    = isOnline && data.players && data.players.online != null ? data.players.online : 0;
+        var max       = isOnline && data.players && data.players.max    != null ? data.players.max    : "?";
 
         var verText   = (data && data.version && data.version !== "") ? data.version : ("MCPE " + server.version);
 
@@ -206,10 +207,10 @@
             '<div class="srv-card__header">',
             '  <div class="srv-card__info">',
             '    <div class="srv-card__top">',
-            '      ' + rankBadge(rank),
+            '      ' + (rank ? rankBadge(rank) : ''),
             '      <span class="srv-name">' + (server.name || server.ip) + "</span>",
-            '      <span class="srv-status srv-status--online">',
-            '        <span class="srv-status__dot"></span><span class="srv-status__text">Online</span>',
+            '      <span class="srv-status ' + (isOnline ? 'srv-status--online' : 'srv-status--offline') + '">',
+            '        <span class="srv-status__dot"></span><span class="srv-status__text">' + (isOnline ? 'Online' : 'Offline') + '</span>',
             "      </span>",
             '      ' + verBadge(server.version),
             "    </div>",
@@ -364,13 +365,15 @@
 
         container.innerHTML = "";
 
-        if (onlineList.length === 0) {
+        if (allServers.length === 0) {
             container.innerHTML = '<p class="srv-empty">No hay servidores online en este momento.</p>';
             return;
         }
 
-        onlineList.forEach(function (item, idx) {
-            var card = createCard(item.server, idx + 1, item.data);
+        allServers.forEach(function (item, idx) {
+            /* Solo los online tienen ranking */
+            var rank = (item.data && item.data.online) ? (idx + 1) : null;
+            var card = createCard(item.server, rank, item.data);
             container.appendChild(card);
             restoreUserRating(card, item.server);
             loadAvgRating(item.server);
@@ -416,19 +419,19 @@
         });
 
         Promise.all(promises).then(function (results) {
-            /* Filtrar offline */
-            var online = results.filter(function (item) {
-                return item.data && item.data.online;
-            });
+            /* Separar online y offline — mostrar online primero, luego offline */
+            var online  = results.filter(function (item) { return item.data && item.data.online; });
+            var offline = results.filter(function (item) { return !item.data || !item.data.online; });
+            var allServers = online.concat(offline);
 
-            /* Ordenar por jugadores online descendente */
+            /* Ordenar online por jugadores descendente */
             online.sort(function (a, b) {
-                var aPlayers = a.data.players && a.data.players.online != null ? a.data.players.online : 0;
-                var bPlayers = b.data.players && b.data.players.online != null ? b.data.players.online : 0;
-                return bPlayers - aPlayers;
+                var aP = a.data && a.data.players ? a.data.players.online || 0 : 0;
+                var bP = b.data && b.data.players ? b.data.players.online || 0 : 0;
+                return bP - aP;
             });
 
-            renderServers(online);
+            renderServers(allServers);
         });
     }
 
