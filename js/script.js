@@ -514,14 +514,17 @@
    CONTADOR DE VISITANTES ÚNICOS — Supabase (sin IPs)
 ============================================================ */
 (function () {
-    var SUPABASE_URL = "https://ktfkhevjxkgkcfvltuey.supabase.co";
-    var SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt0ZmtoZXZqeGtna2Nmdmx0dWV5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MTkyNTYsImV4cCI6MjA5NjA5NTI1Nn0.-gbuid_5PjIw9szdUCRs7OgL81oougTU7mv3s_S8PJY";
-    var TABLE        = "visitors";
-    var LS_KEY       = "lc_visitor_id";
-    var LS_REGISTERED = "lc_registered";
+    var SUPABASE_URL  = "https://ktfkhevjxkgkcfvltuey.supabase.co";
+    var SUPABASE_KEY  = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt0ZmtoZXZqeGtna2Nmdmx0dWV5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MTkyNTYsImV4cCI6MjA5NjA5NTI1Nn0.-gbuid_5PjIw9szdUCRs7OgL81oougTU7mv3s_S8PJY";
+    var TABLE         = "visitors";
+    var LS_KEY        = "lc_visitor_id";
+    var LS_REGISTERED = "lc_registered_v2"; /* v2 = limpia el flag viejo */
 
     var countEl = document.getElementById("visitor-count");
     if (!countEl) return;
+
+    /* Limpiar flag viejo que podría estar bloqueando */
+    localStorage.removeItem("lc_registered");
 
     var headers = {
         "apikey":        SUPABASE_KEY,
@@ -561,36 +564,26 @@
 
     function registerVisit(visitorId) {
         if (localStorage.getItem(LS_REGISTERED) === "1") return Promise.resolve();
-        return fetch(SUPABASE_URL + "/rest/v1/" + TABLE + "?id=eq." + visitorId + "&select=id", {
-            headers: headers
-        })
-        .then(function (res) { return res.json(); })
-        .then(function (rows) {
-            if (rows && rows.length > 0) {
-                localStorage.setItem(LS_REGISTERED, "1");
-                return;
-            }
-            return fetch(SUPABASE_URL + "/rest/v1/" + TABLE, {
-                method:  "POST",
-                headers: Object.assign({}, headers, { "Prefer": "return=minimal" }),
-                body:    JSON.stringify({ id: visitorId, ip_address: null, visited_at: new Date().toISOString() })
-            }).then(function () {
-                localStorage.setItem(LS_REGISTERED, "1");
-            });
+        /* Upsert: inserta si no existe, ignora si ya existe (ON CONFLICT DO NOTHING) */
+        return fetch(SUPABASE_URL + "/rest/v1/" + TABLE, {
+            method:  "POST",
+            headers: Object.assign({}, headers, {
+                "Prefer": "resolution=ignore-duplicates,return=minimal"
+            }),
+            body: JSON.stringify({ id: visitorId, visited_at: new Date().toISOString() })
+        }).then(function (res) {
+            /* 200, 201, 204 = éxito. Cualquier otro = schema incompatible, ignorar */
+            localStorage.setItem(LS_REGISTERED, "1");
+        }).catch(function () {
+            /* Error de red — no bloquear el conteo */
         });
     }
 
     var visitorId = getVisitorId();
 
-    if (localStorage.getItem(LS_REGISTERED) === "1") {
-        fetchCount()
-            .then(function (n) { countEl.textContent = n.toLocaleString("es"); })
-            .catch(function ()  { countEl.textContent = "—"; });
-        return;
-    }
-
+    /* Siempre registrar primero, luego mostrar conteo */
     registerVisit(visitorId)
-        .then(function ()    { return fetchCount(); })
-        .then(function (n)   { countEl.textContent = n.toLocaleString("es"); })
-        .catch(function ()   { countEl.textContent = "—"; });
+        .then(function ()  { return fetchCount(); })
+        .then(function (n) { countEl.textContent = n.toLocaleString("es"); })
+        .catch(function () { countEl.textContent = "—"; });
 })();
