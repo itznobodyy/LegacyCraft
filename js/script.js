@@ -1,12 +1,12 @@
-(function () {
+﻿(function () {
 
     /* ============================================================
-       NAVEGACIÓN POR SECCIONES
+       NAVEGACIÃ“N POR SECCIONES
     ============================================================ */
     var views    = document.querySelectorAll(".content-section");
     var navLinks = document.querySelectorAll(".menu-item[data-section]");
 
-    // FIX #14 — usar PerformanceNavigationTiming en lugar del deprecado
+    // FIX #14 â€” usar PerformanceNavigationTiming en lugar del deprecado
     function isReload() {
         try {
             var nav = performance.getEntriesByType("navigation")[0];
@@ -30,7 +30,7 @@
         views.forEach(function (el) {
             var on = el.getAttribute("data-view") === id;
             el.classList.toggle("is-active", on);
-            // FIX #15 — limpiar inline display para no pisar la clase is-active
+            // FIX #15 â€” limpiar inline display para no pisar la clase is-active
             el.style.display = "";
         });
         navLinks.forEach(function (a) {
@@ -85,8 +85,8 @@
                 });
             }
 
-            // FIX #15 — searchInSections solo filtra menú, no sections
-            // (la sección activa ya cambia via switchToSection)
+            // FIX #15 â€” searchInSections solo filtra menÃº, no sections
+            // (la secciÃ³n activa ya cambia via switchToSection)
             searchInMenu(q);
         });
     }
@@ -125,7 +125,7 @@
         return best;
     }
 
-    // FIX #20 — eliminar shadowing de navLinks
+    // FIX #20 â€” eliminar shadowing de navLinks
     function switchToSection(sectionId) {
         var searchInput = document.getElementById("main-search");
         var wasFocused = searchInput && document.activeElement === searchInput;
@@ -182,7 +182,7 @@
         return m[b.length][a.length];
     }
 
-    // FIX #15 — showAllContent no toca display de sections, solo items y menú
+    // FIX #15 â€” showAllContent no toca display de sections, solo items y menÃº
     function showAllContent() {
         if (list) {
             list.querySelectorAll(".apk-item").forEach(function (el) {
@@ -203,7 +203,7 @@
 
 
     /* ============================================================
-       DOWNLOAD GATE — modal con cuenta atrás
+       DOWNLOAD GATE â€” modal con cuenta atrÃ¡s
     ============================================================ */
     var GATE_SECONDS       = 10;
     var gateEl             = document.getElementById("download-gate");
@@ -218,7 +218,7 @@
     var gateActive         = false;
     var pendingGateUrl     = null;
 
-    // FIX #16 — asignar onclick al mediafireBtn una sola vez aquí
+    // FIX #16 â€” asignar onclick al mediafireBtn una sola vez aquÃ­
     if (mediafireBtn) {
         mediafireBtn.addEventListener("click", function () {
             setTimeout(closeDownloadGate, 100);
@@ -341,7 +341,7 @@
                 if (timerEl)            timerEl.hidden = true;
                 if (mediafireContainer) {
                     mediafireContainer.hidden = false;
-                    // FIX #16 — solo actualizar el href, el listener ya está asignado arriba
+                    // FIX #16 â€” solo actualizar el href, el listener ya estÃ¡ asignado arriba
                     if (mediafireBtn) mediafireBtn.href = url;
                 }
                 return;
@@ -364,7 +364,7 @@
         });
     }
 
-    // FIX #18 — retry con centinela para android selector
+    // FIX #18 â€” retry con centinela para android selector
     var ANDROID_SENTINEL = "__android_selector__";
 
     var retryBtn = document.getElementById("download-gate-retry-adblock");
@@ -375,7 +375,7 @@
                 if (blocked) return;
                 var url = pendingGateUrl;
                 pendingGateUrl = null;
-                // FIX #18 — si era el 0.15.10, abrir el selector de Android
+                // FIX #18 â€” si era el 0.15.10, abrir el selector de Android
                 if (url === ANDROID_SENTINEL) {
                     showAndroidSelector();
                 } else {
@@ -438,7 +438,7 @@
                 e.preventDefault();
                 detectAdblock().then(function (blocked) {
                     if (blocked) {
-                        // FIX #18 — usar centinela en lugar de "#"
+                        // FIX #18 â€” usar centinela en lugar de "#"
                         showAdblockGate(ANDROID_SENTINEL);
                         return;
                     }
@@ -461,28 +461,28 @@
 
 
 /* ============================================================
-   CONTADOR DE VISITANTES ÚNICOS — Supabase
+   CONTADOR DE VISITANTES ÃšNICOS â€” Supabase
 ============================================================ */
 (function () {
     var SUPABASE_URL = "https://ktfkhevjxkgkcfvltuey.supabase.co";
     var SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt0ZmtoZXZqeGtna2Nmdmx0dWV5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MTkyNTYsImV4cCI6MjA5NjA5NTI1Nn0.-gbuid_5PjIw9szdUCRs7OgL81oougTU7mv3s_S8PJY";
     var TABLE  = "visitors";
     var LS_KEY = "lc_visitor_id";
-    var LS_REGISTERED = "lc_registered"; // flag: ya se registró, no volver a intentar
-    var LS_LAST_CHECK = "lc_last_check"; // timestamp del último check (rate limit local)
+    var LS_REGISTERED = "lc_registered"; // flag: ya se registrÃ³, no volver a intentar
+    var LS_LAST_CHECK = "lc_last_check"; // timestamp del Ãºltimo check (rate limit local)
     var CHECK_COOLDOWN = 60 * 60 * 1000; // 1 hora entre registros remotos
 
     var countEl = document.getElementById("visitor-count");
     if (!countEl) return;
 
-    // Sanitizar input — el UUID solo puede tener hex y guiones
+    // Sanitizar input â€” el UUID solo puede tener hex y guiones
     function isValidUUID(str) {
         return /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(str);
     }
 
     function getVisitorId() {
         var id = localStorage.getItem(LS_KEY);
-        // Validar que el ID almacenado sea un UUID válido (no fue manipulado)
+        // Validar que el ID almacenado sea un UUID vÃ¡lido (no fue manipulado)
         if (id && !isValidUUID(id)) {
             localStorage.removeItem(LS_KEY);
             id = null;
@@ -529,7 +529,7 @@
     }
 
     function registerVisit(visitorId) {
-        // Doble check: si ya está marcado como registrado, solo fetch el conteo
+        // Doble check: si ya estÃ¡ marcado como registrado, solo fetch el conteo
         if (localStorage.getItem(LS_REGISTERED) === "1") {
             return Promise.resolve();
         }
@@ -542,7 +542,7 @@
         })
         .then(function (rows) {
             if (rows && rows.length > 0) {
-                // Ya existe — marcar localmente para no volver a consultar
+                // Ya existe â€” marcar localmente para no volver a consultar
                 localStorage.setItem(LS_REGISTERED, "1");
                 return;
             }
@@ -567,7 +567,7 @@
     if (!canCheck() && localStorage.getItem(LS_REGISTERED) === "1") {
         fetchCount()
             .then(function (n) { countEl.textContent = n.toLocaleString("es"); })
-            .catch(function () { countEl.textContent = "—"; });
+            .catch(function () { countEl.textContent = "â€”"; });
         return;
     }
 
@@ -577,76 +577,6 @@
             countEl.textContent = count.toLocaleString("es");
         })
         .catch(function () {
-            countEl.textContent = "—";
-        });
-})();
-
-    var countEl = document.getElementById("visitor-count");
-    if (!countEl) return;
-
-    function getVisitorId() {
-        var id = localStorage.getItem(LS_KEY);
-        if (!id) {
-            id = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
-                var r = Math.random() * 16 | 0;
-                return (c === "x" ? r : (r & 0x3 | 0x8)).toString(16);
-            });
-            localStorage.setItem(LS_KEY, id);
-        }
-        return id;
-    }
-
-    var headers = {
-        "apikey": SUPABASE_KEY,
-        "Authorization": "Bearer " + SUPABASE_KEY
-    };
-
-    // FIX #22 — manejar NaN si content-range devuelve "*"
-    function fetchCount() {
-        return fetch(SUPABASE_URL + "/rest/v1/" + TABLE + "?select=id", {
-            headers: Object.assign({}, headers, {
-                "Prefer": "count=exact",
-                "Range": "0-0"
-            })
-        }).then(function (res) {
-            var cr = res.headers.get("content-range");
-            if (cr) {
-                var n = parseInt(cr.split("/")[1], 10);
-                return isNaN(n) ? 0 : n;
-            }
-            return 0;
-        });
-    }
-
-    // FIX #23 — verificar res.ok en el POST
-    function registerVisit(visitorId) {
-        return fetch(SUPABASE_URL + "/rest/v1/" + TABLE + "?id=eq." + visitorId + "&select=id", {
-            headers: headers
-        })
-        .then(function (res) { return res.json(); })
-        .then(function (rows) {
-            if (rows && rows.length > 0) return; // ya registrado
-            return fetch(SUPABASE_URL + "/rest/v1/" + TABLE, {
-                method: "POST",
-                headers: Object.assign({}, headers, {
-                    "Content-Type": "application/json",
-                    "Prefer": "return=minimal"
-                }),
-                body: JSON.stringify({ id: visitorId })
-            }).then(function (res) {
-                if (!res.ok) throw new Error("POST failed: " + res.status);
-            });
-        });
-    }
-
-    var visitorId = getVisitorId();
-
-    registerVisit(visitorId)
-        .then(function () { return fetchCount(); })
-        .then(function (count) {
-            countEl.textContent = count.toLocaleString("es");
-        })
-        .catch(function () {
-            countEl.textContent = "—";
+            countEl.textContent = "â€”";
         });
 })();
