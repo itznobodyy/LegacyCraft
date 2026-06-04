@@ -18,11 +18,17 @@
         }
     }
 
-    function sectionFromHash() {
+    var SECTIONS = ["inicio", "apks", "servidores", "creditos"];
+
+    function sectionFromUrl() {
         if (isReload()) return "inicio";
-        var h = (window.location.hash || "#inicio").replace(/^#/, "");
+        /* Try hash first (legacy), then pathname */
+        var h = (window.location.hash || "").replace(/^#/, "");
         if (h === "aviso") h = "creditos";
-        if (h === "inicio" || h === "apks" || h === "servidores" || h === "creditos") return h;
+        if (SECTIONS.indexOf(h) !== -1) return h;
+        /* Try pathname: /apks -> "apks" */
+        var p = window.location.pathname.replace(/^\//, "").replace(/\/$/, "");
+        if (SECTIONS.indexOf(p) !== -1) return p;
         return "inicio";
     }
 
@@ -51,17 +57,14 @@
             if (!id) return;
             // Siempre mostrar la sección directamente sin depender del hash
             showSection(id);
-            if (history.replaceState) {
-                history.replaceState(null, "", "#" + id);
-            } else {
-                // fallback silencioso — no cambiar hash para evitar hashchange
-                window.location.hash = id;
+            if (history.pushState) {
+                history.pushState(null, "", id === "inicio" ? "/" : "/" + id);
             }
         });
     });
 
-    window.addEventListener("hashchange", function () {
-        var id = sectionFromHash();
+    window.addEventListener("popstate", function () {
+        var id = sectionFromUrl();
         showSection(id);
         requestAnimationFrame(function () {
             document.documentElement.style.scrollBehavior = "auto";
@@ -70,12 +73,8 @@
         });
     });
 
-    if (isReload()) {
-        if (history.replaceState) history.replaceState(null, "", "#inicio");
-    } else if (!window.location.hash || window.location.hash === "#") {
-        if (history.replaceState) history.replaceState(null, "", "#inicio");
-    }
-    showSection(sectionFromHash());
+    if (history.replaceState) history.replaceState(null, "", window.location.pathname || "/");
+    showSection(sectionFromUrl());
 
     /* Forzar scroll al tope después del paint para que no restaure posición anterior en móvil */
     requestAnimationFrame(function () {
@@ -156,8 +155,8 @@
         var searchValue = searchInput ? searchInput.value : "";
 
         showSection(sectionId);
-        if (history.replaceState) {
-            history.replaceState(null, "", "#" + sectionId);
+        if (history.pushState) {
+            history.pushState(null, "", sectionId === "inicio" ? "/" : "/" + sectionId);
         }
 
         if (wasFocused && searchInput) {
