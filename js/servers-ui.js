@@ -164,34 +164,35 @@
         var online  = data && data.players && data.players.online != null ? data.players.online : 0;
         var max     = data && data.players && data.players.max    != null ? data.players.max    : "?";
 
-        var motdRaw = "";
-        if (data && data.motd) {
-            if (typeof data.motd === "string") {
-                motdRaw = data.motd;
-            } else if (data.motd.raw && data.motd.raw.length) {
-                // raw es array de líneas — unir con \n para respetar saltos
-                motdRaw = Array.isArray(data.motd.raw)
-                    ? data.motd.raw.join("\n")
-                    : data.motd.raw;
-            } else if (data.motd.clean) {
-                motdRaw = Array.isArray(data.motd.clean)
-                    ? data.motd.clean.join("\n")
-                    : data.motd.clean;
+        var proto     = "—";
+        if (data && data.protocol) {
+            if (typeof data.protocol === "object" && data.protocol.version != null) {
+                proto = data.protocol.version;
+            } else if (typeof data.protocol === "number") {
+                proto = data.protocol;
             }
         }
+        var hasQuery  = (data && data.debug && data.debug.query === true);
+        var queryFail = (data && data.debug && data.debug.error && data.debug.error.query)
+            ? data.debug.error.query : null;
 
-        // Construir HTML del MOTD línea por línea
-        var motdLines = motdRaw ? motdRaw.split("\n") : [];
+        // La API ya devuelve el MOTD en HTML con colores correctos — usarlo directamente
+        var motdLines = [];
+        if (data && data.motd && data.motd.html && data.motd.html.length) {
+            motdLines = Array.isArray(data.motd.html) ? data.motd.html : [data.motd.html];
+        } else if (data && data.motd && data.motd.raw && data.motd.raw.length) {
+            var raws = Array.isArray(data.motd.raw) ? data.motd.raw : [data.motd.raw];
+            motdLines = raws.map(function (line) { return motdToHtml(line); });
+        } else if (data && data.motd && data.motd.clean) {
+            var cleans = Array.isArray(data.motd.clean) ? data.motd.clean : [data.motd.clean];
+            motdLines = cleans;
+        }
+
         var motdBlockHtml = motdLines.length
             ? motdLines.map(function (line) {
-                return '<div class="srv-motd__line">' + motdToHtml(line) + "</div>";
+                return '<div class="srv-motd__line">' + line + "</div>";
               }).join("")
             : '<div class="srv-motd__line" style="color:rgba(255,255,255,0.35)">Sin MOTD</div>';
-
-        var verText   = (data && data.version && data.version !== "—") ? data.version : ("MCPE " + server.version);
-        var proto     = (data && data.debug && data.debug.protocol) ? data.debug.protocol : (data && data.protocol ? data.protocol : "84");
-        var hasQuery  = (data && data.debug && data.debug.query === true);
-        var queryFail = (data && data.debug && typeof data.debug.query_error === "string") ? data.debug.query_error : null;
 
         var card = document.createElement("div");
         card.className = "srv-card";
