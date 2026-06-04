@@ -573,7 +573,7 @@
             return fetch(SUPABASE_URL + "/rest/v1/" + TABLE, {
                 method:  "POST",
                 headers: Object.assign({}, headers, { "Prefer": "return=minimal" }),
-                body:    JSON.stringify({ id: visitorId, visited_at: new Date().toISOString() })
+                body:    JSON.stringify({ id: visitorId, ip_address: null, visited_at: new Date().toISOString() })
             }).then(function () {
                 localStorage.setItem(LS_REGISTERED, "1");
             });
