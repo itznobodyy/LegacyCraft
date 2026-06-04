@@ -164,6 +164,8 @@
         var online  = data && data.players && data.players.online != null ? data.players.online : 0;
         var max     = data && data.players && data.players.max    != null ? data.players.max    : "?";
 
+        var verText   = (data && data.version && data.version !== "") ? data.version : ("MCPE " + server.version);
+
         var proto     = "—";
         if (data && data.protocol) {
             if (typeof data.protocol === "object" && data.protocol.version != null) {
