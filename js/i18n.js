@@ -303,11 +303,11 @@
         }
     };
 
-    /* ── Detectar idioma: localStorage > navigator.language > "es" ── */
+    /* ── Detectar idioma: localStorage > navigator.language > "en" ── */
     var LS_LANG = "lc_lang";
     var _lang = localStorage.getItem(LS_LANG);
     if (!_lang) {
-        var nav = (navigator.language || navigator.userLanguage || "es").toLowerCase();
+        var nav = (navigator.language || navigator.userLanguage || "en").toLowerCase();
         _lang = nav.startsWith("es") ? "es" : "en";
     }
 
