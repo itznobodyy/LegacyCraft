@@ -69,20 +69,32 @@
 
     /* ── Guardar o actualizar rating en Supabase ── */
     function upsertRating(key, rating, visitorId) {
+        /* Primero borra el rating anterior de este visitor+server, luego inserta el nuevo.
+           Esto evita depender de la policy UPDATE que puede fallar con anon. */
         return fetch(
-            SUPABASE_URL + "/rest/v1/" + RATINGS_TABLE,
+            SUPABASE_URL + "/rest/v1/" + RATINGS_TABLE +
+            "?server_key=eq." + encodeURIComponent(key) +
+            "&visitor_id=eq." + encodeURIComponent(visitorId),
             {
-                method: "POST",
-                headers: Object.assign({}, _sbHeaders, {
-                    "Prefer": "resolution=merge-duplicates,return=minimal"
-                }),
-                body: JSON.stringify({
-                    server_key: key,
-                    rating:     rating,
-                    visitor_id: visitorId
-                })
+                method: "DELETE",
+                headers: Object.assign({}, _sbHeaders)
             }
-        ).catch(function () {});
+        ).then(function () {
+            return fetch(
+                SUPABASE_URL + "/rest/v1/" + RATINGS_TABLE,
+                {
+                    method: "POST",
+                    headers: Object.assign({}, _sbHeaders, {
+                        "Prefer": "return=minimal"
+                    }),
+                    body: JSON.stringify({
+                        server_key: key,
+                        rating:     rating,
+                        visitor_id: visitorId
+                    })
+                }
+            );
+        }).catch(function () {});
     }
 
     /* ── Parsear colores § del MOTD a HTML ── */
