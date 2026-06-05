@@ -140,9 +140,10 @@
 
     /* ── Versión badge ── */
     function verBadge(version) {
+        var label = version === "ambas" ? t("srv.both") : version;
         var cls = version === "0.14.3" ? "srv-ver--old" :
                   version === "ambas"  ? "srv-ver--both" : "srv-ver--new";
-        return '<span class="srv-ver ' + cls + '">' + version + "</span>";
+        return '<span class="srv-ver ' + cls + '">' + label + "</span>";
     }
 
     /* ── Ranking badge ── */
@@ -165,7 +166,7 @@
         var online    = isOnline && data.players && data.players.online != null ? data.players.online : 0;
         var max       = isOnline && data.players && data.players.max    != null ? data.players.max    : "?";
 
-        var verText   = (data && data.version && data.version !== "") ? data.version : ("MCPE " + server.version);
+        var verText   = (data && data.version && data.version !== "") ? data.version : ("MCPE " + (server.version === "ambas" ? t("srv.both") : server.version));
 
         var proto     = "—";
         if (data && data.protocol) {
