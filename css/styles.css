@@ -1787,3 +1787,26 @@ body.download-gate-open { overflow: hidden; }
 .skill-bar-fill.is-visible {
     width: var(--pct);
 }
+
+
+/* ============================================
+   LANG TOGGLE BUTTON
+   ============================================ */
+.lang-toggle {
+    background: transparent;
+    border: 1px solid var(--border-blue);
+    color: var(--blue);
+    cursor: pointer;
+    font-family: var(--font-accent);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-align: center;
+    transition: background 0.18s, color 0.18s, border-color 0.18s;
+    width: 100%;
+}
+.lang-toggle:hover {
+    background: rgba(59,130,246,0.12);
+    color: #fff;
+    border-color: var(--blue);
+}

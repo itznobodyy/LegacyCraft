@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<html lang="es">
+<html lang="es" id="html-root">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
@@ -59,10 +59,13 @@
             <!-- Menú lateral izquierdo -->
             <nav class="sidebar-menu">
                 <ul class="menu-list">
-                    <li><a href="/home" class="menu-item" data-section="home">Inicio</a></li>
-                    <li><a href="/downloads" class="menu-item" data-section="downloads">APKs PE</a></li>
-                    <li><a href="/servers" class="menu-item" data-section="servers">Servidores</a></li>
-                    <li><a href="/credits" class="menu-item" data-section="credits">Créditos</a></li>
+                    <li><a href="/home" class="menu-item" data-section="home" data-i18n="nav.home">Inicio</a></li>
+                    <li><a href="/downloads" class="menu-item" data-section="downloads" data-i18n="nav.downloads">APKs PE</a></li>
+                    <li><a href="/servers" class="menu-item" data-section="servers" data-i18n="nav.servers">Servidores</a></li>
+                    <li><a href="/credits" class="menu-item" data-section="credits" data-i18n="nav.credits">Créditos</a></li>
+                    <li>
+                        <button id="lang-toggle" class="menu-item lang-toggle" onclick="i18n.set(i18n.lang()==='es'?'en':'es')">EN</button>
+                    </li>
                 </ul>
             </nav>
 
@@ -75,7 +78,7 @@
                             <circle cx="11" cy="11" r="7"/>
                             <path d="M21 21l-4.3-4.3"/>
                         </svg>
-                        <input type="search" id="main-search" class="search-input" placeholder="Buscar..." autocomplete="off">
+                        <input type="search" id="main-search" class="search-input" placeholder="Buscar..." autocomplete="off" data-i18n-placeholder="search.placeholder">
                     </div>
                 </div>
 
@@ -90,31 +93,23 @@
                                         <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
                                     </svg>
                                 </div>
-                                <h2>Qué encontrarás</h2>
+                                <h2 data-i18n="home.whatyouget">Qué encontrarás</h2>
                                 <div class="feature-list">
                                     <div class="feature-item">
-                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
-                                        </svg>
-                                        <span>APKs de MCPE 0.15.10 y 0.14.3</span>
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                                        <span data-i18n="home.feature.apks">APKs de MCPE 0.15.10 y 0.14.3</span>
                                     </div>
                                     <div class="feature-item">
-                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
-                                        </svg>
-                                        <span>Servidores legacy activos</span>
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                                        <span data-i18n="home.feature.servers">Servidores legacy activos</span>
                                     </div>
                                     <div class="feature-item">
-                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
-                                        </svg>
-                                        <span>Links directos a MediaFire</span>
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                                        <span data-i18n="home.feature.links">Links directos a MediaFire</span>
                                     </div>
                                     <div class="feature-item">
-                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
-                                        </svg>
-                                        <span>Discord para soporte</span>
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                                        <span data-i18n="home.feature.discord">Discord para soporte</span>
                                     </div>
                                 </div>
                             </div>
@@ -125,34 +120,34 @@
                                         <path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm2 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
                                     </svg>
                                 </div>
-                                <h2>Cómo descargar</h2>
+                                <h2 data-i18n="home.howto">Cómo descargar</h2>
                                 <div class="steps-container">
                                     <div class="step-item">
                                         <div class="step-number">1</div>
                                         <div class="step-content">
-                                            <h3>Abre APKs PE</h3>
-                                            <p>En el menú lateral</p>
+                                            <h3 data-i18n="home.step1.title">Abre APKs PE</h3>
+                                            <p data-i18n="home.step1.desc">En el menú lateral</p>
                                         </div>
                                     </div>
                                     <div class="step-item">
                                         <div class="step-number">2</div>
                                         <div class="step-content">
-                                            <h3>Elige tu versión</h3>
-                                            <p>0.15.10 o 0.14.3</p>
+                                            <h3 data-i18n="home.step2.title">Elige tu versión</h3>
+                                            <p data-i18n="home.step2.desc">0.15.10 o 0.14.3</p>
                                         </div>
                                     </div>
                                     <div class="step-item">
                                         <div class="step-number">3</div>
                                         <div class="step-content">
-                                            <h3>Pulsa Descargar</h3>
-                                            <p>Espera la cuenta atrás</p>
+                                            <h3 data-i18n="home.step3.title">Pulsa Descargar</h3>
+                                            <p data-i18n="home.step3.desc">Espera la cuenta atrás</p>
                                         </div>
                                     </div>
                                     <div class="step-item">
                                         <div class="step-number">4</div>
                                         <div class="step-content">
-                                            <h3>Obtén el APK</h3>
-                                            <p>Desde MediaFire</p>
+                                            <h3 data-i18n="home.step4.title">Obtén el APK</h3>
+                                            <p data-i18n="home.step4.desc">Desde MediaFire</p>
                                         </div>
                                     </div>
                                 </div>
@@ -164,33 +159,27 @@
                                         <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
                                     </svg>
                                 </div>
-                                <h2>Antes de instalar</h2>
+                                <h2 data-i18n="home.beforeinstall">Antes de instalar</h2>
                                 <div class="tips-list">
                                     <div class="tip-item">
-                                        <div class="tip-icon">
-                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
-                                        </div>
+                                        <div class="tip-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg></div>
                                         <div class="tip-content">
-                                            <h4>Activa orígenes desconocidos</h4>
-                                            <p>Sin eso no puedes instalar el APK</p>
+                                            <h4 data-i18n="home.tip1.title">Activa orígenes desconocidos</h4>
+                                            <p data-i18n="home.tip1.desc">Sin eso no puedes instalar el APK</p>
                                         </div>
                                     </div>
                                     <div class="tip-item">
-                                        <div class="tip-icon">
-                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
-                                        </div>
+                                        <div class="tip-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg></div>
                                         <div class="tip-content">
-                                            <h4>¿No funciona en Android 14+?</h4>
-                                            <p>Baja las alternativas de más abajo</p>
+                                            <h4 data-i18n="home.tip2.title">¿No funciona en Android 14+?</h4>
+                                            <p data-i18n="home.tip2.desc">Baja las alternativas de más abajo</p>
                                         </div>
                                     </div>
                                     <div class="tip-item">
-                                        <div class="tip-icon">
-                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
-                                        </div>
+                                        <div class="tip-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg></div>
                                         <div class="tip-content">
-                                            <h4>Guarda tus mundos</h4>
-                                            <p>Haz copia antes de reinstalar</p>
+                                            <h4 data-i18n="home.tip3.title">Guarda tus mundos</h4>
+                                            <p data-i18n="home.tip3.desc">Haz copia antes de reinstalar</p>
                                         </div>
                                     </div>
                                 </div>
@@ -202,14 +191,12 @@
                                         <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
                                     </svg>
                                 </div>
-                                <h2>Comunidad</h2>
+                                <h2 data-i18n="home.community">Comunidad</h2>
                                 <div class="community-content">
-                                    <p>¿No te funciona algo o hay un link caído?</p>
+                                    <p data-i18n="home.community.text">¿No te funciona algo o hay un link caído?</p>
                                     <a href="https://discord.gg/g4vqe3gzU8" target="_blank" rel="noopener noreferrer" class="discord-button">
-                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                                            <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.95 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418z"/>
-                                        </svg>
-                                        <span>Únete al Discord</span>
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.95 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418z"/></svg>
+                                        <span data-i18n="home.discord.btn">Únete al Discord</span>
                                     </a>
                                 </div>
                             </div>
@@ -217,7 +204,7 @@
                     </section>
 
                     <section id="downloads" class="content-section" data-view="downloads">
-                        <h1 class="section-title">Descargas APK</h1>
+                        <h1 class="section-title" data-i18n="dl.title">Descargas APK</h1>
                         <ul class="apk-list" id="apk-list">
                             <li class="apk-item" data-search="minecraft pe 0.15.10 agosto pistones mapas corceles">
                                 <div class="apk-header">
@@ -229,17 +216,17 @@
                                                 76.56 MB
                                             </span>
                                         </div>
-                                        <span class="apk-date">Agosto 2016</span>
+                                        <span class="apk-date" data-i18n="dl.015.date">Agosto 2016</span>
                                     </div>
                                     <div class="apk-actions">
-                                        <a href="#" class="btn-download btn-download-gate btn-download-015" target="_blank" rel="noopener noreferrer" data-version="0.15.10">Descargar</a>
+                                        <a href="#" class="btn-download btn-download-gate btn-download-015" target="_blank" rel="noopener noreferrer" data-version="0.15.10" data-i18n="dl.btn.download">Descargar</a>
                                     </div>
                                 </div>
-                                <p class="apk-desc">Pistones pegajosos, mapas del tesoro, corceles y mobs clásicos.</p>
+                                <p class="apk-desc" data-i18n="dl.015.desc">Pistones pegajosos, mapas del tesoro, corceles y mobs clásicos.</p>
                                 <ul class="apk-features">
-                                    <li>Pistones pegajosos</li>
-                                    <li>Mapas del tesoro</li>
-                                    <li>Corceles y armadura</li>
+                                    <li data-i18n="dl.015.f1">Pistones pegajosos</li>
+                                    <li data-i18n="dl.015.f2">Mapas del tesoro</li>
+                                    <li data-i18n="dl.015.f3">Corceles y armadura</li>
                                 </ul>
                             </li>
                             <li class="apk-item" data-search="minecraft pe 0.14 0.14.3 redstone dispensadores carritos brujas">
@@ -252,82 +239,80 @@
                                                 28.08 MB
                                             </span>
                                         </div>
-                                        <span class="apk-date muted">Febrero 2016</span>
+                                        <span class="apk-date muted" data-i18n="dl.014.date">Febrero 2016</span>
                                     </div>
                                     <div class="apk-actions">
-                                        <a href="https://www.mediafire.com/file/h0s8mb0kdxnorow/LegacyCraft_0.14.3.apk/file" class="btn-download btn-download-gate" target="_blank" rel="noopener noreferrer">Descargar</a>
+                                        <a href="https://www.mediafire.com/file/h0s8mb0kdxnorow/LegacyCraft_0.14.3.apk/file" class="btn-download btn-download-gate" target="_blank" rel="noopener noreferrer" data-i18n="dl.btn.download">Descargar</a>
                                     </div>
                                 </div>
-                                <p class="apk-desc">Redstone básico, dispensadores, carritos con cofres y biomas clásicos.</p>
+                                <p class="apk-desc" data-i18n="dl.014.desc">Redstone básico, dispensadores, carritos con cofres y biomas clásicos.</p>
                                 <ul class="apk-features">
-                                    <li>Redstone y dispensadores</li>
-                                    <li>Carritos con cofres</li>
-                                    <li>Brujas y cabañas</li>
+                                    <li data-i18n="dl.014.f1">Redstone y dispensadores</li>
+                                    <li data-i18n="dl.014.f2">Carritos con cofres</li>
+                                    <li data-i18n="dl.014.f3">Brujas y cabañas</li>
                                 </ul>
                             </li>
                         </ul>
 
                         <!-- ALTERNATIVAS ANDROID 14 -->
-                        <h2 class="section-subtitle">Alternativas <span class="badge-android14">Android 14+</span></h2>
-                        <p class="alt-desc">Si las versiones de arriba no funcionan en tu dispositivo, prueba estas alternativas. Incluyen anuncios — instala AdGuard para eliminarlos.</p>
+                        <h2 class="section-subtitle"><span data-i18n="dl.alt.title">Alternativas</span> <span class="badge-android14">Android 14+</span></h2>
+                        <p class="alt-desc" data-i18n="dl.alt.desc">Si las versiones de arriba no funcionan en tu dispositivo, prueba estas alternativas. Incluyen anuncios — instala AdGuard para eliminarlos.</p>
 
                         <ul class="apk-list" id="alt-list">
                             <li class="apk-item apk-item--alt" data-search="alternativa android 14 minecraft pe 0.15">
                                 <div class="apk-header">
                                     <div class="apk-info">
                                         <div class="apk-name-row">
-                                            <span class="apk-name">Alternativa 1 — PE 0.15.10</span>
+                                            <span class="apk-name" data-i18n="dl.alt1.name">Alternativa 1 — PE 0.15.10</span>
                                             <span class="apk-size-badge">
                                                 <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
                                                 82.14 MB
                                             </span>
                                         </div>
-                                        <span class="apk-date">Android 14+ compatible</span>
+                                        <span class="apk-date" data-i18n="dl.alt1.date">Android 14+ compatible</span>
                                     </div>
                                     <div class="apk-actions">
-                                        <a href="https://www.mediafire.com/file/ls92h91smce6r0j/Alternativa+1+[Android+14].apk/file" class="btn-download btn-download-gate" target="_blank" rel="noopener noreferrer">Descargar</a>
+                                        <a href="https://www.mediafire.com/file/ls92h91smce6r0j/Alternativa+1+[Android+14].apk/file" class="btn-download btn-download-gate" target="_blank" rel="noopener noreferrer" data-i18n="dl.btn.download">Descargar</a>
                                     </div>
                                 </div>
-                                <p class="apk-desc">Versión alternativa de Minecraft PE compatible con Android 14 y superior.</p>
+                                <p class="apk-desc" data-i18n="dl.alt1.desc">Versión alternativa de Minecraft PE compatible con Android 14 y superior.</p>
                                 <ul class="apk-features">
                                     <li>0.15.10</li>
                                     <li>Android 14+</li>
-                                    <li>Contiene anuncios</li>
+                                    <li data-i18n="dl.alt1.f3">Contiene anuncios</li>
                                 </ul>
                             </li>
                             <li class="apk-item apk-item--alt" data-search="alternativa android 14 minecraft pe 0.14">
                                 <div class="apk-header">
                                     <div class="apk-info">
                                         <div class="apk-name-row">
-                                            <span class="apk-name">Alternativa 2 — PE 0.15.10</span>
+                                            <span class="apk-name" data-i18n="dl.alt2.name">Alternativa 2 — PE 0.15.10</span>
                                             <span class="apk-size-badge">
                                                 <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
                                                 82.11 MB
                                             </span>
                                         </div>
-                                        <span class="apk-date">Android 14+ compatible</span>
+                                        <span class="apk-date" data-i18n="dl.alt2.date">Android 14+ compatible</span>
                                     </div>
                                     <div class="apk-actions">
-                                        <a href="https://www.mediafire.com/file/bn2h7ky5r9wwabx/Alternativa+2+[Android+14].apk/file" class="btn-download btn-download-gate" target="_blank" rel="noopener noreferrer">Descargar</a>
+                                        <a href="https://www.mediafire.com/file/bn2h7ky5r9wwabx/Alternativa+2+[Android+14].apk/file" class="btn-download btn-download-gate" target="_blank" rel="noopener noreferrer" data-i18n="dl.btn.download">Descargar</a>
                                     </div>
                                 </div>
-                                <p class="apk-desc">Segunda versión alternativa para dispositivos con Android 14 y superior.</p>
+                                <p class="apk-desc" data-i18n="dl.alt2.desc">Segunda versión alternativa para dispositivos con Android 14 y superior.</p>
                                 <ul class="apk-features">
                                     <li>0.15.10</li>
                                     <li>Android 14+</li>
-                                    <li>Contiene anuncios</li>
+                                    <li data-i18n="dl.alt2.f3">Contiene anuncios</li>
                                 </ul>
                             </li>
                         </ul>
 
                         <!-- ADGUARD -->
                         <h2 class="section-subtitle section-subtitle--adguard">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:-3px;margin-right:6px;color:#f59e0b">
-                                <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/>
-                            </svg>
-                            Bloquear anuncios
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:-3px;margin-right:6px;color:#f59e0b"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
+                            <span data-i18n="dl.adguard.title">Bloquear anuncios</span>
                         </h2>
-                        <p class="alt-desc">Las alternativas incluyen anuncios. Instala <strong>AdGuard</strong> para eliminarlos completamente.</p>
+                        <p class="alt-desc" data-i18n-html="dl.adguard.desc">Las alternativas incluyen anuncios. Instala <strong>AdGuard</strong> para eliminarlos completamente.</p>
 
                         <ul class="apk-list">
                             <li class="apk-item apk-item--adguard" data-search="adguard bloquear anuncios ads">
@@ -340,27 +325,27 @@
                                                 59.23 MB
                                             </span>
                                         </div>
-                                        <span class="apk-date">Bloqueador de anuncios</span>
+                                        <span class="apk-date" data-i18n="dl.adguard.date">Bloqueador de anuncios</span>
                                     </div>
                                     <div class="apk-actions">
-                                        <a href="https://www.mediafire.com/file/vmkxhg76lcsr84w/AD-Guard.apk/file" class="btn-download btn-download-gate btn-adguard" target="_blank" rel="noopener noreferrer">Descargar</a>
+                                        <a href="https://www.mediafire.com/file/vmkxhg76lcsr84w/AD-Guard.apk/file" class="btn-download btn-download-gate btn-adguard" target="_blank" rel="noopener noreferrer" data-i18n="dl.btn.download">Descargar</a>
                                     </div>
                                 </div>
-                                <p class="apk-desc">Bloquea todos los anuncios de las versiones alternativas. Instálalo antes de abrir el juego.</p>
+                                <p class="apk-desc" data-i18n="dl.adguard.desc2">Bloquea todos los anuncios de las versiones alternativas. Instálalo antes de abrir el juego.</p>
                                 <ul class="apk-features">
-                                    <li>Sin anuncios</li>
-                                    <li>Para alternativas</li>
-                                    <li>Fácil instalación</li>
+                                    <li data-i18n="dl.adguard.f1">Sin anuncios</li>
+                                    <li data-i18n="dl.adguard.f2">Para alternativas</li>
+                                    <li data-i18n="dl.adguard.f3">Fácil instalación</li>
                                 </ul>
                             </li>
                         </ul>
                     </section>
 
                     <section id="servers" class="content-section" data-view="servers">
-                        <h1 class="section-title">Servidores</h1>
-                        <p class="srv-intro">Servidores activos de Minecraft PE 0.15.10 y 0.14.3. El estado se actualiza en tiempo real.</p>
+                        <h1 class="section-title" data-i18n="srv.title">Servidores</h1>
+                        <p class="srv-intro" data-i18n="srv.intro">Servidores activos de Minecraft PE 0.15.10 y 0.14.3. El estado se actualiza en tiempo real.</p>
                         <div class="srv-filter-bar">
-                            <button class="srv-filter-btn is-active" data-filter="all">Todos</button>
+                            <button class="srv-filter-btn is-active" data-filter="all" data-i18n="srv.filter.all">Todos</button>
                             <button class="srv-filter-btn" data-filter="0.15.10">0.15.10</button>
                             <button class="srv-filter-btn" data-filter="0.14.3">0.14.3</button>
                         </div>
@@ -368,142 +353,125 @@
                     </section>
 
                     <section id="credits" class="content-section" data-view="credits">
-                        <h1 class="section-title">Créditos</h1>
-                        <p class="credits-intro">Un sitio para los que todavía juegan Minecraft PE clásico. Hecho por Nobody.</p>
+                        <h1 class="section-title" data-i18n="cr.title">Créditos</h1>
+                        <p class="credits-intro" data-i18n="cr.intro">Un sitio para los que todavía juegan Minecraft PE clásico. Hecho por Nobody.</p>
 
                         <div class="credits-grid">
                             <div class="credit-card featured">
                                 <div class="credit-icon">
-                                    <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor">
-                                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
-                                    </svg>
+                                    <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
                                 </div>
-                                <h3>Autor</h3>
+                                <h3 data-i18n="cr.author">Autor</h3>
                                 <div class="author-info">
                                     <p class="author-name">Nobody</p>
-                                    <p class="author-role">Creador & Desarrollador</p>
+                                    <p class="author-role" data-i18n="cr.author.role">Creador & Desarrollador</p>
                                 </div>
                                 <div class="social-links">
                                     <a href="https://github.com/itznobodyy" target="_blank" rel="noopener noreferrer" class="social-link">
-                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-                                        </svg>
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
                                         <span>GitHub</span>
                                     </a>
                                 </div>
-                                <p class="credit-description">Hago cosas en la web. Este es uno de esos proyectos.</p>
+                                <p class="credit-description" data-i18n="cr.author.desc">Hago cosas en la web. Este es uno de esos proyectos.</p>
                             </div>
 
                             <div class="credit-card">
                                 <div class="credit-icon">
-                                    <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor">
-                                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                                    </svg>
+                                    <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
                                 </div>
-                                <h3>Tecnologías</h3>
+                                <h3 data-i18n="cr.tech">Tecnologías</h3>
                                 <div class="tech-stack">
                                     <div class="tech-item">
                                         <span class="tech-name">HTML5</span>
-                                        <span class="tech-type">Frontend</span>
+                                        <span class="tech-type" data-i18n="cr.tech.type.frontend">Frontend</span>
                                     </div>
                                     <div class="tech-item">
                                         <span class="tech-name">CSS3</span>
-                                        <span class="tech-type">Estilos</span>
+                                        <span class="tech-type" data-i18n="cr.tech.type.styles">Estilos</span>
                                     </div>
                                     <div class="tech-item">
                                         <span class="tech-name">JavaScript</span>
-                                        <span class="tech-type">Interactividad</span>
+                                        <span class="tech-type" data-i18n="cr.tech.type.interactive">Interactividad</span>
                                     </div>
                                     <div class="tech-item">
                                         <span class="tech-name">Google Fonts</span>
-                                        <span class="tech-type">Tipografía</span>
+                                        <span class="tech-type" data-i18n="cr.tech.type.typography">Tipografía</span>
                                     </div>
                                 </div>
-                                <p class="tech-description">Página estática optimizada con tecnologías modernas y diseño responsivo.</p>
+                                <p class="tech-description" data-i18n="cr.tech.desc">Página estática optimizada con tecnologías modernas y diseño responsivo.</p>
                             </div>
 
                             <div class="credit-card">
                                 <div class="credit-icon">
-                                    <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor">
-                                        <path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm2 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
-                                    </svg>
+                                    <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm2 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
                                 </div>
-                                <h3>Proyecto</h3>
+                                <h3 data-i18n="cr.project">Proyecto</h3>
                                 <div class="project-stats">
                                     <div class="stat-item">
                                         <span class="stat-number">2</span>
-                                        <span class="stat-label">Versiones</span>
+                                        <span class="stat-label" data-i18n="cr.project.versions">Versiones</span>
                                     </div>
                                     <div class="stat-item">
                                         <span class="stat-number">2016</span>
-                                        <span class="stat-label">Año de lanzamiento</span>
+                                        <span class="stat-label" data-i18n="cr.project.launch">Año de lanzamiento</span>
                                     </div>
                                     <div class="stat-item">
                                         <span class="stat-number">2026</span>
-                                        <span class="stat-label">Actualización</span>
+                                        <span class="stat-label" data-i18n="cr.project.update">Actualización</span>
                                     </div>
                                 </div>
-                                <p class="project-description">Colección curada de las mejores versiones clásicas de Minecraft PE para nostalgia y disfrute.</p>
+                                <p class="project-description" data-i18n="cr.project.desc">Colección curada de las mejores versiones clásicas de Minecraft PE para nostalgia y disfrute.</p>
                             </div>
                         </div>
 
                         <!-- Skills card -->
                         <div class="credit-card skills-card">
                             <div class="credit-icon">
-                                <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/>
-                                </svg>
+                                <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor"><path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/></svg>
                             </div>
-                            <h3>Skills</h3>
+                            <h3 data-i18n="cr.skills">Skills</h3>
                             <div class="skills-list">
                                 <div class="skill-item">
                                     <div class="skill-header">
                                         <span class="skill-name">HTML / CSS</span>
                                         <span class="skill-pct">85%</span>
                                     </div>
-                                    <div class="skill-bar-track">
-                                        <div class="skill-bar-fill" style="--pct:85%;--color:#00e5ff"></div>
-                                    </div>
+                                    <div class="skill-bar-track"><div class="skill-bar-fill" style="--pct:85%;--color:#00e5ff"></div></div>
                                 </div>
                                 <div class="skill-item">
                                     <div class="skill-header">
                                         <span class="skill-name">JavaScript</span>
                                         <span class="skill-pct">70%</span>
                                     </div>
-                                    <div class="skill-bar-track">
-                                        <div class="skill-bar-fill" style="--pct:70%;--color:#a78bfa"></div>
-                                    </div>
+                                    <div class="skill-bar-track"><div class="skill-bar-fill" style="--pct:70%;--color:#a78bfa"></div></div>
                                 </div>
                                 <div class="skill-item">
                                     <div class="skill-header">
                                         <span class="skill-name">Lua</span>
                                         <span class="skill-pct">65%</span>
                                     </div>
-                                    <div class="skill-bar-track">
-                                        <div class="skill-bar-fill" style="--pct:65%;--color:#34d399"></div>
-                                    </div>
+                                    <div class="skill-bar-track"><div class="skill-bar-fill" style="--pct:65%;--color:#34d399"></div></div>
                                 </div>
                                 <div class="skill-item">
                                     <div class="skill-header">
                                         <span class="skill-name">SQL</span>
                                         <span class="skill-pct">40%</span>
                                     </div>
-                                    <div class="skill-bar-track">
-                                        <div class="skill-bar-fill" style="--pct:40%;--color:#fbbf24"></div>
-                                    </div>
+                                    <div class="skill-bar-track"><div class="skill-bar-fill" style="--pct:40%;--color:#fbbf24"></div></div>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="credits-footer">                            <div class="footer-content">
+                        <div class="credits-footer">
+                            <div class="footer-content">
                                 <div class="footer-logo">
                                     <h3>LegacyCraft</h3>
-                                    <p>Preservando la nostalgia de Minecraft PE</p>
+                                    <p data-i18n="cr.footer.tagline">Preservando la nostalgia de Minecraft PE</p>
                                 </div>
                                 <div class="footer-info">
-                                    <p>© 2026 Nobody · Todos los derechos reservados</p>
-                                    <p>Los textos, el diseño de esta página, el logotipo LegacyCraft y el código del sitio son obra del autor salvo donde se indique lo contrario.</p>
-                                    <p>Queda prohibida la reproducción o distribución no autorizada de los materiales propios del proyecto.</p>
+                                    <p data-i18n="cr.footer.rights">© 2026 Nobody · Todos los derechos reservados</p>
+                                    <p data-i18n="cr.footer.legal1">Los textos, el diseño de esta página, el logotipo LegacyCraft y el código del sitio son obra del autor salvo donde se indique lo contrario.</p>
+                                    <p data-i18n="cr.footer.legal2">Queda prohibida la reproducción o distribución no autorizada de los materiales propios del proyecto.</p>
                                 </div>
                             </div>
                         </div>
@@ -516,7 +484,7 @@
         <!-- Iconos sociales en esquina inferior izquierda -->
         <div class="social-icons">
             <!-- Contador de visitantes -->
-            <div class="visitor-counter" id="visitor-counter" title="Visitantes únicos">
+            <div class="visitor-counter" id="visitor-counter" data-i18n-title="visitor.title" title="Visitantes únicos">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                     <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/>
                 </svg>
@@ -551,21 +519,17 @@
                         <path d="M17.523 15.341a.498.498 0 0 1-.497.497.498.498 0 0 1-.497-.497.498.498 0 0 1 .497-.497.498.498 0 0 1 .497.497zm-10.549 0a.498.498 0 0 1-.497.497.498.498 0 0 1-.497-.497.498.498 0 0 1 .497-.497.498.498 0 0 1 .497.497zm10.882-5.655l1.435-2.487a.297.297 0 0 0-.108-.406.297.297 0 0 0-.406.108l-1.453 2.517A8.776 8.776 0 0 0 12 8.297a8.776 8.776 0 0 0-3.824.861L6.723 6.641a.297.297 0 0 0-.406-.108.297.297 0 0 0-.108.406l1.435 2.487C4.955 10.722 3.18 13.15 3 16h18c-.18-2.85-1.955-5.278-4.644-6.314zM3 17v.5A2.5 2.5 0 0 0 5.5 20h13a2.5 2.5 0 0 0 2.5-2.5V17H3z"/>
                     </svg>
                 </div>
-                <p class="download-gate__eyebrow">Selecciona tu versión de Android</p>
-                <h2 id="android-selector-title" class="download-gate__title download-gate__title--arcade">Minecraft PE 0.15.10</h2>
-                <p class="download-gate__text">Elige la versión compatible con tu dispositivo Android.</p>
+                <p class="download-gate__eyebrow" data-i18n="modal.android.eyebrow">Selecciona tu versión de Android</p>
+                <h2 id="android-selector-title" class="download-gate__title download-gate__title--arcade" data-i18n="modal.android.title">Minecraft PE 0.15.10</h2>
+                <p class="download-gate__text" data-i18n="modal.android.text">Elige la versión compatible con tu dispositivo Android.</p>
                 <div class="android-selector__buttons">
                     <a href="#" class="btn-teal android-selector-btn" data-android="normal" data-url="https://www.mediafire.com/file/cxxosn44sqyab3e/LegacyCraft_0.15.10.apk/file">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                            <path d="M12 2l-5.5 9h3.5v7l5.5-9h-3.5v-7z"/>
-                        </svg>
-                        Android Normal — 76.56 MB
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l-5.5 9h3.5v7l5.5-9h-3.5v-7z"/></svg>
+                        <span data-i18n="modal.android.normal">Android Normal — 76.56 MB</span>
                     </a>
                     <a href="#" class="btn-teal android-selector-btn" data-android="14" data-url="https://www.mediafire.com/file/icqb0jtk2glryge/Legacy_0.15_And14-15.apk/file">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                            <path d="M12 2l-5.5 9h3.5v7l5.5-9h-3.5v-7z"/>
-                        </svg>
-                        Android 14+ — 39.51 MB
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l-5.5 9h3.5v7l5.5-9h-3.5v-7z"/></svg>
+                        <span data-i18n="modal.android.14">Android 14+ — 39.51 MB</span>
                     </a>
                 </div>
             </div>
@@ -584,18 +548,16 @@
                         <line x1="12" y1="15" x2="12" y2="3"/>
                     </svg>
                 </div>
-                <p class="download-gate__eyebrow">Antes de descargar</p>
+                <p class="download-gate__eyebrow" data-i18n="modal.dl.eyebrow">Antes de descargar</p>
                 <h2 id="download-gate-title" class="download-gate__title download-gate__title--arcade">LegacyCraft</h2>
-                <p class="download-gate__text">Si algo falla con la APK, cuéntanoslo en <strong>Discord</strong> y lo revisamos.</p>
+                <p class="download-gate__text" data-i18n-html="modal.dl.text">Si algo falla con la APK, cuéntanoslo en <strong>Discord</strong> y lo revisamos.</p>
                 <a href="https://discord.gg/g4vqe3gzU8" class="btn-discord-modal" target="_blank" rel="noopener noreferrer">
-                    <svg class="btn-discord-modal__icon" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                        <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.95 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
-                    </svg>
-                    Ir a Discord
+                    <svg class="btn-discord-modal__icon" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.95 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>
+                    <span data-i18n="modal.dl.discord">Ir a Discord</span>
                 </a>
                 <div class="download-gate__divider" aria-hidden="true"></div>
                 <div class="download-gate__timer" aria-live="polite">
-                    <p class="download-gate__timer-caption">Redirección a la descarga</p>
+                    <p class="download-gate__timer-caption" data-i18n="modal.dl.timer.caption">Redirección a la descarga</p>
                     <div class="download-gate__timer-display">
                         <span id="download-count" class="download-gate__timer-num">10</span>
                         <span class="download-gate__timer-suffix">s</span>
@@ -605,21 +567,22 @@
                     </div>
                 </div>
                 <div id="download-gate__mediafire" class="download-gate__mediafire" hidden>
-                    <p class="download-gate__timer-caption">Listo para descargar</p>
+                    <p class="download-gate__timer-caption" data-i18n="modal.dl.ready.caption">Listo para descargar</p>
                     <a id="mediafire-download-btn" class="mediafire-download-btn" href="#" target="_blank" rel="noopener noreferrer">
                         <img src="https://upload.wikimedia.org/wikipedia/fr/2/2e/MediaFire_Logo.svg" alt="MediaFire" class="mediafire-logo-img">
                     </a>
                 </div>
             </div>
             <div id="download-gate-panel-adblock" class="download-gate__panel download-gate__panel--adblock" hidden>
-                <p class="download-gate__eyebrow">Descarga bloqueada</p>
+                <p class="download-gate__eyebrow" data-i18n="modal.ab.eyebrow">Descarga bloqueada</p>
                 <h2 id="download-gate-adblock-title" class="download-gate__title download-gate__title--arcade">LegacyCraft</h2>
-                <p class="download-gate__text">Desactiva el bloqueador <strong>en esta página</strong> y pulsa Reintentar para continuar con la descarga.</p>
-                <button type="button" class="btn-teal download-gate__retry-adblock" id="download-gate-retry-adblock">Ya lo desactivé · Reintentar</button>
+                <p class="download-gate__text" data-i18n-html="modal.ab.text">Desactiva el bloqueador <strong>en esta página</strong> y pulsa Reintentar para continuar con la descarga.</p>
+                <button type="button" class="btn-teal download-gate__retry-adblock" id="download-gate-retry-adblock" data-i18n="modal.ab.retry">Ya lo desactivé · Reintentar</button>
             </div>
         </div>
     </div>
 
+    <script src="js/i18n.js"></script>
     <script src="js/script.js"></script>
     <script src="js/servers.js"></script>
     <script src="js/servers-ui.js"></script>

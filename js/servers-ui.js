@@ -195,7 +195,7 @@
             ? motdLines.map(function (line) {
                 return '<div class="srv-motd__line">' + line + "</div>";
               }).join("")
-            : '<div class="srv-motd__line" style="color:rgba(255,255,255,0.35)">Sin MOTD</div>';
+            : '<div class="srv-motd__line" style="color:rgba(255,255,255,0.35)">' + t("srv.no_motd") + '</div>';
 
         var card = document.createElement("div");
         card.className = "srv-card";
@@ -210,7 +210,7 @@
             '      ' + (rank ? rankBadge(rank) : ''),
             '      <span class="srv-name">' + (server.name || server.ip) + "</span>",
             '      <span class="srv-status ' + (isOnline ? 'srv-status--online' : 'srv-status--offline') + '">',
-            '        <span class="srv-status__dot"></span><span class="srv-status__text">' + (isOnline ? 'Online' : 'Offline') + '</span>',
+            '        <span class="srv-status__dot"></span><span class="srv-status__text">' + (isOnline ? t("srv.online") : t("srv.offline")) + '</span>',
             "      </span>",
             '      ' + verBadge(server.version),
             "    </div>",
@@ -218,7 +218,7 @@
             '    <span class="srv-addr">',
             '      <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>',
             '      <span class="srv-addr__text">' + server.ip + ":" + server.port + "</span>",
-            '      <button class="srv-copy" title="Copiar IP" data-copy="' + server.ip + ":" + server.port + '">',
+            '      <button class="srv-copy" title="' + t("srv.copy") + '" data-copy="' + server.ip + ":" + server.port + '">',
             '        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>',
             "      </button>",
             "    </span>",
@@ -243,11 +243,11 @@
             "  </div>",
             '  <div class="srv-stat srv-stat--proto">',
             '    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4 2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>',
-            '    <span class="srv-stat__val">Protocolo: <strong>' + proto + "</strong></span>",
+            '    <span class="srv-stat__val">' + t("srv.protocol") + ' <strong>' + proto + "</strong></span>",
             "  </div>",
             '  <div class="srv-stat ' + (hasQuery ? "srv-stat--query-on" : "srv-stat--query-off") + '">',
             '    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>',
-            '    <span class="srv-stat__val">Query: <strong>' + (hasQuery ? "Activado" : (queryFail ? "Desactivado" : "No")) + "</strong></span>",
+            '    <span class="srv-stat__val">' + t("srv.query") + ' <strong>' + (hasQuery ? t("srv.query.on") : (queryFail ? t("srv.query.off") : t("srv.query.no"))) + "</strong></span>",
             "  </div>",
             '  <div class="srv-stat srv-stat--version">',
             '    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg>',
@@ -258,13 +258,13 @@
             /* Sistema de estrellas */
             '<div class="srv-stars" data-server-key="' + key + '">',
             '  <div class="srv-stars__icons" id="stars-' + idKey + '">',
-            '    <button class="srv-star" data-star="1" aria-label="1 estrella">★</button>',
-            '    <button class="srv-star" data-star="2" aria-label="2 estrellas">★</button>',
-            '    <button class="srv-star" data-star="3" aria-label="3 estrellas">★</button>',
-            '    <button class="srv-star" data-star="4" aria-label="4 estrellas">★</button>',
-            '    <button class="srv-star" data-star="5" aria-label="5 estrellas">★</button>',
+            '    <button class="srv-star" data-star="1" aria-label="' + t("srv.star1") + '">★</button>',
+            '    <button class="srv-star" data-star="2" aria-label="' + t("srv.star2") + '">★</button>',
+            '    <button class="srv-star" data-star="3" aria-label="' + t("srv.star3") + '">★</button>',
+            '    <button class="srv-star" data-star="4" aria-label="' + t("srv.star4") + '">★</button>',
+            '    <button class="srv-star" data-star="5" aria-label="' + t("srv.star5") + '">★</button>',
             "  </div>",
-            '  <span class="srv-stars__avg" id="avg-' + idKey + '">Cargando…</span>',
+            '  <span class="srv-stars__avg" id="avg-' + idKey + '">' + t("srv.loading") + '</span>',
             "</div>"
         ].join("\n");
 
@@ -366,7 +366,7 @@
         container.innerHTML = "";
 
         if (!serverList || serverList.length === 0) {
-            container.innerHTML = '<p class="srv-empty">No hay servidores online en este momento.</p>';
+            container.innerHTML = '<p class="srv-empty">' + t("srv.empty") + '</p>';
             return;
         }
 
@@ -402,7 +402,7 @@
         var servers = window.SERVERS_LIST || [];
         if (servers.length === 0) {
             var c = document.getElementById("servers-container");
-            if (c) c.innerHTML = '<p class="srv-empty">No hay servidores configurados.</p>';
+            if (c) c.innerHTML = '<p class="srv-empty">' + t("srv.none") + '</p>';
             return;
         }
 
@@ -434,6 +434,14 @@
             renderServers(allServers);
         });
     }
+
+    /* ── Helper: traducción con fallback ── */
+    function t(key) {
+        return (window.i18n && window.i18n.t) ? window.i18n.t(key) : key;
+    }
+
+    /* ── Exponer re-render para i18n ── */
+    window._lcRerenderServers = function () { fetchAndRender(); };
 
     /* ── Inicializar ── */
     function init() {

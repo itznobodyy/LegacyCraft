@@ -396,11 +396,11 @@
             if (!pendingGateUrl) return;
             var origText = retryBtn.textContent;
             retryBtn.disabled = true;
-            retryBtn.textContent = "Comprobando...";
+            retryBtn.textContent = window.i18n ? window.i18n.t("modal.ab.checking") : "Comprobando...";
             detectAdblock().then(function (blocked) {
                 retryBtn.disabled = false;
                 if (blocked) {
-                    retryBtn.textContent = "Sigue activo, intenta de nuevo";
+                    retryBtn.textContent = window.i18n ? window.i18n.t("modal.ab.stillon") : "Sigue activo, intenta de nuevo";
                     setTimeout(function () { retryBtn.textContent = origText; }, 2500);
                     return;
                 }
