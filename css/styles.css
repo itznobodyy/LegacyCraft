@@ -46,6 +46,9 @@ body {
     color: var(--text);
     overflow-x: hidden;
     background: #020b12;
+    /* Extiende el color de fondo bajo la status bar en iOS */
+    padding-top: env(safe-area-inset-top, 0px);
+    margin-top: calc(-1 * env(safe-area-inset-top, 0px));
 }
 
 .page {
@@ -143,14 +146,18 @@ body {
 
 /* ---- Fondo blur (intacto) ---- */
 .bg-blur {
-    position: fixed; inset: 0;
+    position: fixed;
+    top: calc(-1 * env(safe-area-inset-top, 0px));
+    left: 0; right: 0; bottom: 0;
     z-index: 0; overflow: hidden;
     pointer-events: none;
     contain: strict; isolation: isolate;
     transform: translateZ(0);
 }
 .bg-blur__image {
-    position: absolute; inset: -28px;
+    position: absolute;
+    top: calc(-28px - env(safe-area-inset-top, 0px));
+    left: -28px; right: -28px; bottom: -28px;
     background: url("../img/fondo.jpg") center/cover no-repeat;
     filter: blur(8px);
     transform: translate3d(0,0,0) scale(1.05);
